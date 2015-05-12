@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +38,7 @@ public class FirstRunActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        Toast.makeText(FirstRunActivity.this, "First time so register", Toast.LENGTH_SHORT).show();
+        Toast.makeText(FirstRunActivity.this, "Welcome! Write Your e-mail address and password.", Toast.LENGTH_SHORT).show();
 
         getMenuInflater().inflate(R.menu.menu_first_run, menu);
         return true;
@@ -67,33 +68,38 @@ public class FirstRunActivity extends ActionBarActivity {
         checkEmail(email);
 
         final HashCode password = Hashing.sha1().hashString(setPass.getText().toString(), Charset.defaultCharset());
-        checkPass(password);
 
-        Intent main = new Intent(getApplicationContext(), MainActivity.class);
-        startActivity(main);
+        if (checkPassword(password)) {
+            if (checkEmail(email)) {
+                sendData(email, password);
+                Intent main = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(main);
+            } else {
+                Toast.makeText(FirstRunActivity.this, "Wrong email address!", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(FirstRunActivity.this, "Password must be longer or equal than 4 character!", Toast.LENGTH_SHORT).show();
+        }
     }
 
-    /**
-     * method to check if login is correct, cannot get null or asdjhda
-     * @param email
-     */
-    private void checkEmail(String email)
-    {
+
+    private boolean checkEmail(CharSequence target) {
+        //return !TextUtils.isEmpty(target) && android.util.Patterns.EMAIL_ADDRESS.matcher(target).matches();
+        return true;
+    }
+
+    private boolean checkPassword(HashCode password) {
+        if(setPass.getText().toString().length() < 4)
+            return false;
+        else
+            return true;
+    }
+
+    private void sendData(String email, HashCode password) {
         MainActivity.userEmail = email;
-        Toast.makeText(FirstRunActivity.this, "Login " + email, Toast.LENGTH_SHORT).show();
+        MainActivity.userPass = password;
         SharedPreferences infos = getSharedPreferences("userInfos", 0);
         infos.edit().putString("userEmail", email).commit();
-    }
-
-    /**
-     * method to check if pass is correct - has at least 8 characters, big letters and special characters
-     * @param password
-     */
-    private void checkPass(HashCode password)
-    {
-        MainActivity.userPass = password;
-        Toast.makeText(FirstRunActivity.this, "Pass " + password, Toast.LENGTH_SHORT).show();
-        SharedPreferences infos = getSharedPreferences("userInfos", 0);
         infos.edit().putString("userPass", password.toString()).commit();
     }
 }

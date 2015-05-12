@@ -39,6 +39,7 @@ public class MainActivity extends ActionBarActivity {
 
         pass = (EditText) findViewById(R.id.editText);
         login = (Button) findViewById(R.id.loginButt);
+
     }
 
 
@@ -68,8 +69,8 @@ public class MainActivity extends ActionBarActivity {
         SharedPreferences infos = getSharedPreferences("userInfos", 0);
         emailFromRegister = infos.getString("userEmail", "empty");
         passFromRegister = infos.getString("userPass", "empty");
-        Toast.makeText(MainActivity.this, "Email given " + emailFromRegister, Toast.LENGTH_SHORT).show();
-        Toast.makeText(MainActivity.this, "Pass given " + passFromRegister, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this, "Email given " + emailFromRegister, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this, "Pass given " + passFromRegister, Toast.LENGTH_SHORT).show();
     }
 
     /**
