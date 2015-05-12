@@ -8,26 +8,28 @@
     android:id="@+id/o">
 
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textEmailAddress"
         android:ems="10"
         android:id="@+id/setEmail"
         android:layout_above="@+id/textView3"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center" />
 
     <EditText
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/setPass"
         android:layout_centerVertical="true"
         android:layout_alignLeft="@+id/setEmail"
-        android:layout_alignStart="@+id/setEmail" />
+        android:layout_alignStart="@+id/setEmail"
+        android:gravity="center" />
 
     <Button
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Submit"
         android:id="@+id/submitButt"
@@ -36,20 +38,21 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Password"
         android:id="@+id/textView3"
         android:layout_above="@+id/setPass"
-        android:layout_centerHorizontal="true" />
+        android:gravity="center|center_vertical|center_horizontal" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="E-mail"
         android:id="@+id/textView4"
         android:layout_above="@+id/setEmail"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center_vertical|center_horizontal|clip_horizontal" />
 </RelativeLayout>
