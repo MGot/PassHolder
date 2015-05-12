@@ -111,7 +111,7 @@ public class MainActivity extends ActionBarActivity {
         else{
             Toast.makeText(MainActivity.this, "Wrong password! Try again", Toast.LENGTH_SHORT).show();
         }
-    }
+    } 
 
     public void howTo(View v) {
         Intent howTo = new Intent(getApplicationContext(), HowToActivity.class);
