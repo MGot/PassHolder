@@ -9,18 +9,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.codes.pro.passholder.R;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity {
 
-    Button login;
+    private EditText pass;
+    private Button login;
 
+    private String emailFromRegister;
+    private String passFromRegister;
+    public static String userEmail = "";
+    public static HashCode userPass = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +37,7 @@ public class MainActivity extends ActionBarActivity {
         setContentView(R.layout.activity_main);
 
 
+        pass = (EditText) findViewById(R.id.editText);
         login = (Button) findViewById(R.id.loginButt);
     }
 
@@ -35,8 +45,39 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+
+        SharedPreferences settings = getSharedPreferences("MyPrefsFile", 0);
+
+        if (settings.getBoolean("firstRun", true)) {               //the app is being launched for first time- register time
+            openFirstRun(); //go to register menu
+
+            // record the fact that the app has been started at least once
+            settings.edit().putBoolean("firstRun", false).commit();
+        }
+
+        getUserInfos();
+
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
+    }
+
+    /**
+     * method to get email and pass from registered user
+     */
+    private void getUserInfos(){
+        SharedPreferences infos = getSharedPreferences("userInfos", 0);
+        String emailFromRegister = infos.getString("userEmail", "empty");
+        String passFromRegister = infos.getString("userPass", "empty");
+        Toast.makeText(MainActivity.this, "Email given " + emailFromRegister, Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "Pass given " + passFromRegister, Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * method to open registation frame -> FirstRunActivity
+     */
+    private void openFirstRun(){
+        Intent intent = new Intent(this, FirstRunActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -60,8 +101,15 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void logIn(View v) {
-        Intent manList = new Intent(getApplicationContext(), ManagerList.class);
-        startActivity(manList);
+
+        final HashCode password = Hashing.sha1().hashString(pass.getText().toString(), Charset.defaultCharset());
+        if(password.equals(pass)) {
+            Intent manList = new Intent(getApplicationContext(), ManagerList.class);
+            startActivity(manList);
+        }
+        else{
+            Toast.makeText(MainActivity.this, "Wrong password! Try again", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void howTo(View v) {

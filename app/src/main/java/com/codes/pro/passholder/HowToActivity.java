@@ -4,6 +4,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 
 public class HowToActivity extends ActionBarActivity {
@@ -18,6 +19,8 @@ public class HowToActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
+        Toast.makeText(HowToActivity.this, "How to", Toast.LENGTH_SHORT).show();
+
         getMenuInflater().inflate(R.menu.menu_how_to, menu);
         return true;
     }
