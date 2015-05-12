@@ -66,8 +66,8 @@ public class MainActivity extends ActionBarActivity {
      */
     private void getUserInfos(){
         SharedPreferences infos = getSharedPreferences("userInfos", 0);
-        String emailFromRegister = infos.getString("userEmail", "empty");
-        String passFromRegister = infos.getString("userPass", "empty");
+        emailFromRegister = infos.getString("userEmail", "empty");
+        passFromRegister = infos.getString("userPass", "empty");
         Toast.makeText(MainActivity.this, "Email given " + emailFromRegister, Toast.LENGTH_SHORT).show();
         Toast.makeText(MainActivity.this, "Pass given " + passFromRegister, Toast.LENGTH_SHORT).show();
     }
@@ -103,7 +103,8 @@ public class MainActivity extends ActionBarActivity {
     public void logIn(View v) {
 
         final HashCode password = Hashing.sha1().hashString(pass.getText().toString(), Charset.defaultCharset());
-        if(password.equals(pass)) {
+        Toast.makeText(MainActivity.this, "Pass1 " + password.toString() + " Pass2 " + passFromRegister, Toast.LENGTH_SHORT).show();
+        if(passFromRegister.equals(password.toString())) {
             Intent manList = new Intent(getApplicationContext(), ManagerList.class);
             startActivity(manList);
         }
