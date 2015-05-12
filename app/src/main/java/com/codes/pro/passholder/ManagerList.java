@@ -1,5 +1,8 @@
 package com.codes.pro.passholder;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -22,13 +25,14 @@ public class ManagerList extends ActionBarActivity {
     private ManagerListAdapter adapter;
     private ArrayList<String> itemname = new ArrayList<String>();
     private TextView category;
+    final Context context = this;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manager_list);
-
+        Toast.makeText(getApplicationContext(), "Long click on category to remove it", Toast.LENGTH_SHORT).show();
         adapter = new ManagerListAdapter(this,itemname);
 
         list=(ListView)findViewById(R.id.managerList);
@@ -44,6 +48,13 @@ public class ManagerList extends ActionBarActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent pass = new Intent(getApplicationContext(),PasswordList.class);
                 startActivity(pass);
+            }
+        });
+
+        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                removeCatDialog(position);
+                return true;
             }
         });
     }
@@ -71,12 +82,56 @@ public class ManagerList extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void newSource(View v) {
+    public void newCategory(View v) {
         category = (EditText) findViewById(R.id.newSourceField);
         String text = category.getText().toString();
         itemname.add(text);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,itemname);
         list.setAdapter(arrayAdapter);
+    }
+
+
+    public void removeCatDialog(final int position) {
+        String newPass = "";
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+        alertDialogBuilder.setTitle("Do You really want to remove this category?");
+
+        alertDialogBuilder
+                .setMessage("Click yes to remove \"" + itemname.get(position) + "\"")
+                .setCancelable(false)
+                .setNegativeButton("No",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // if this button is clicked, just close
+                        // the dialog box and do nothing
+                        dialog.cancel();
+                    }
+                })
+                .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // if this button is clicked, close
+                        // current activity
+                        removeCat(position);
+                        dialog.cancel();
+                    }
+                });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+    }
+
+    public void removeCat(int position) {
+            /*
+                    USUWANE HASŁA Z BAZY DANYCH
+
+             */
+
+        itemname.remove(position);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, itemname);
+        list.setAdapter(adapter);
     }
 
 }

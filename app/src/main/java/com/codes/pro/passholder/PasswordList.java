@@ -32,8 +32,6 @@ public class PasswordList extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_list);
 
-        password.add("Password1");
-        password.add("Password2");
         listView = (ListView) findViewById(R.id.listview);
 
         // Instantiating array adapter to populate the listView
