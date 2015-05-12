@@ -20,7 +20,6 @@ import java.util.ArrayList;
 public class MainActivity extends ActionBarActivity {
 
     Button login;
-    SharedPreferences prefs = null;
 
 
     @Override
@@ -28,7 +27,6 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        prefs = getSharedPreferences("com.code.pro.passholder", MODE_PRIVATE);
 
         login = (Button) findViewById(R.id.loginButt);
     }
@@ -59,15 +57,6 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onResume() {
         super.onResume();
-        if (prefs.getBoolean("firstrun", true)) {
-            // Do first run stuff here then set 'firstrun' as false
-            // using the following line to edit/commit prefs
-
-            Toast.makeText(getApplicationContext(),"CHODZI",Toast.LENGTH_SHORT);
-
-
-            prefs.edit().putBoolean("firstrun", false).commit();
-        }
     }
 
     public void logIn(View v) {
