@@ -30,7 +30,7 @@
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Log-in"
+        android:text="Log-in w chuj"
         android:id="@+id/loginButt"
         android:layout_weight="0.04"
         android:onClick="logIn"/>
