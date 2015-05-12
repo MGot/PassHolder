@@ -1,5 +1,8 @@
 package com.codes.pro.passholder;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -8,6 +11,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -17,13 +21,10 @@ import java.util.List;
 
 public class PasswordList extends ActionBarActivity {
 
-    private ListView list;
-    private ManagerListAdapter adapter;
-    private ArrayList<String> password = new ArrayList<String>();
-    ListView listView;
-
-    List<String> countries = new ArrayList<String>();
-
+    private ListView listView;
+    private List<String> password = new ArrayList<String>();
+    private int actualPosition = -1;
+    final Context context = this;
 
 
     @Override
@@ -31,42 +32,26 @@ public class PasswordList extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_list);
 
-        //adapter = new ManagerListAdapter(this,password);
-
-        //list=(ListView)findViewById(R.id.passList);
-        /*list.setAdapter(adapter);
-
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,password);
-        arrayAdapter.clear();
-
-
-
-        list.setSelection(1);
-        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-
-                password.remove(position);
-                removePassword();
-                return true;
-            }
-        });*/
-        countries.add("Password1");
-        countries.add("Password2");
+        password.add("Password1");
+        password.add("Password2");
         listView = (ListView) findViewById(R.id.listview);
+
+        // Instantiating array adapter to populate the listView
+        // The layout android.R.layout.simple_list_item_single_choice creates radio button for each listview item
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,password);
+
+        listView.setAdapter(adapter);
 
 
         AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-                Toast.makeText(getBaseContext(), "You selected :" + countries.get(position), Toast.LENGTH_SHORT).show();
+                actualPosition = position;
+                //Toast.makeText(getApplicationContext(), "You selected item number: " + actualPosition, Toast.LENGTH_SHORT).show();
             }
         };
 
-        // Instantiating array adapter to populate the listView
-        // The layout android.R.layout.simple_list_item_single_choice creates radio button for each listview item
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,countries);
-
-        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(itemClickListener);
     }
 
 
@@ -92,14 +77,142 @@ public class PasswordList extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void newPass(View v) {
-        countries.add("Password");
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,countries);
-        listView.setAdapter(adapter);
+
+    public void addDialog(View v) {
+        final EditText input = new EditText(this);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+        alertDialogBuilder.setTitle("New password");
+
+        alertDialogBuilder
+                .setMessage("Write new password and click 'Yes' to add it")
+                .setView(input)
+                .setCancelable(false)
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.cancel();
+                    }
+                })
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        newPass(input.getText().toString());
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
 
-    public void removePassword(View v) {
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,countries);
+
+    public void newPass(String pass) {
+        /*
+
+
+               DODAWANIE HASŁĄ DO BAZY DANYCH
+
+
+         */
+        password.add(pass);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,password);
         listView.setAdapter(adapter);
+        Toast.makeText(getApplicationContext(), "You added new password!", Toast.LENGTH_SHORT).show();
+    }
+
+    public void modifyDialog(View v) {
+        if(actualPosition != -1) {
+            final EditText input = new EditText(this);
+            input.setText(password.get(actualPosition));
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+            alertDialogBuilder.setTitle("Modify password");
+
+            alertDialogBuilder
+                    .setMessage("Edit Your password and click 'Yes' to confirm")
+                    .setView(input)
+                    .setCancelable(false)
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            modifyPass(input.getText().toString());
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Select position to modify!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void modifyPass(String pass) {
+        /*
+
+
+               MODYFIKACJA HASŁĄ W BAZIE DANYCH
+
+
+         */
+        password.set(actualPosition,pass);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,password);
+        listView.setAdapter(adapter);
+        Toast.makeText(getApplicationContext(), "You modified password!", Toast.LENGTH_SHORT).show();
+    }
+
+
+    public void removeDialog(View v) {
+        String newPass = "";
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+
+        // set title
+        alertDialogBuilder.setTitle("Do You really want to remove this password?");
+
+        // set dialog message
+        alertDialogBuilder
+                .setMessage("Click yes to remove \"" + password.get(actualPosition) + "\"")
+                .setCancelable(false)
+                .setNegativeButton("No",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // if this button is clicked, just close
+                        // the dialog box and do nothing
+                        dialog.cancel();
+                    }
+                })
+                .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int id) {
+                        // if this button is clicked, close
+                        // current activity
+                        removePass();
+                        dialog.cancel();
+                    }
+                });
+
+        // create alert dialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+
+        // show it
+        alertDialog.show();
+    }
+
+    public void removePass() {
+        if(actualPosition != -1) {
+
+            /*
+                    USUWANE HASŁA Z BAZY DANYCH
+
+             */
+
+            password.remove(actualPosition);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, password);
+            listView.setAdapter(adapter);
+            actualPosition = -1;
+        } else {
+            Toast.makeText(getApplicationContext(), "Select position to remove!", Toast.LENGTH_SHORT).show();
+        }
     }
 }
