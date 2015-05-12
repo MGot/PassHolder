@@ -12,7 +12,7 @@
         android:id="@+id/managerList"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"
-        android:layout_above="@+id/editText2" />
+        android:layout_above="@+id/newSourceField" />
 
     <Button
         android:layout_width="fill_parent"
@@ -30,6 +30,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/newSourceField"
         android:layout_above="@+id/newSource"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:gravity="center" />
 
 </RelativeLayout>

@@ -9,8 +9,10 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class PasswordList extends ActionBarActivity {
@@ -18,16 +20,21 @@ public class PasswordList extends ActionBarActivity {
     private ListView list;
     private ManagerListAdapter adapter;
     private ArrayList<String> password = new ArrayList<String>();
+    ListView listView;
+
+    List<String> countries = new ArrayList<String>();
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_list);
 
-        adapter = new ManagerListAdapter(this,password);
+        //adapter = new ManagerListAdapter(this,password);
 
-        list=(ListView)findViewById(R.id.passList);
-        list.setAdapter(adapter);
+        //list=(ListView)findViewById(R.id.passList);
+        /*list.setAdapter(adapter);
 
         final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,password);
         arrayAdapter.clear();
@@ -37,12 +44,29 @@ public class PasswordList extends ActionBarActivity {
         list.setSelection(1);
         list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                //Toast.makeText(getApplicationContext(), "O kurwa", Toast.LENGTH_SHORT).show();
+
                 password.remove(position);
                 removePassword();
                 return true;
             }
-        });
+        });*/
+        countries.add("Password1");
+        countries.add("Password2");
+        listView = (ListView) findViewById(R.id.listview);
+
+
+        AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+                Toast.makeText(getBaseContext(), "You selected :" + countries.get(position), Toast.LENGTH_SHORT).show();
+            }
+        };
+
+        // Instantiating array adapter to populate the listView
+        // The layout android.R.layout.simple_list_item_single_choice creates radio button for each listview item
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,countries);
+
+        listView.setAdapter(adapter);
     }
 
 
@@ -69,13 +93,13 @@ public class PasswordList extends ActionBarActivity {
     }
 
     public void newPass(View v) {
-        password.add("Password");
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,password);
-        list.setAdapter(arrayAdapter);
+        countries.add("Password");
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,countries);
+        listView.setAdapter(adapter);
     }
 
-    public void removePassword() {
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,password);
-        list.setAdapter(arrayAdapter);
+    public void removePassword(View v) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,countries);
+        listView.setAdapter(adapter);
     }
 }
