@@ -4,8 +4,10 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +28,7 @@ public class ManagerList extends ActionBarActivity {
     private ArrayList<String> itemname = new ArrayList<String>();
     private TextView category;
     final Context context = this;
-
+    private String listName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +48,8 @@ public class ManagerList extends ActionBarActivity {
         list.setSelection(1);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                listName = itemname.get(position);
+                Toast.makeText(getApplicationContext(), "Name " + listName, Toast.LENGTH_SHORT).show();
                 Intent pass = new Intent(getApplicationContext(),PasswordList.class);
                 startActivity(pass);
             }
@@ -82,14 +86,39 @@ public class ManagerList extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public String getListName(){
+        return listName;
+    }
+
     public void newCategory(View v) {
         category = (EditText) findViewById(R.id.newSourceField);
         String text = category.getText().toString();
         itemname.add(text);
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,itemname);
         list.setAdapter(arrayAdapter);
+        createTable(text);
     }
 
+    /**
+     * method to create table in database when users added category
+     * @param categoryText - category name
+     */
+    private void createTable(String categoryText){
+
+            try {
+                MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                  /* Create a Table in the Database. */
+                MainActivity.myDB.execSQL("CREATE TABLE IF NOT EXISTS "
+                        + categoryText
+                        + " (id INTEGER PRIMARY KEY AUTOINCREMENT, password TEXT);");
+            }catch(Exception e) {
+                Log.e("Error", "Error with creating database", e);
+            } finally {
+                if (MainActivity.myDB != null)
+                    MainActivity.myDB.close();
+            }
+
+    }
 
     public void removeCatDialog(final int position) {
         String newPass = "";

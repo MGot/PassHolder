@@ -3,6 +3,7 @@ package com.codes.pro.passholder;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -26,6 +27,7 @@ public class FirstRunActivity extends ActionBarActivity {
     private EditText setEmail;
     private EditText setPass;
     private Button submitButt;
+    public SQLiteDatabase myDb = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

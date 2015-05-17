@@ -2,6 +2,7 @@ package com.codes.pro.passholder;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v4.content.IntentCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -24,6 +25,9 @@ import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity {
+
+    public static final String DATABASE_NAME = "PASSWORDS_DB";
+    public static SQLiteDatabase myDB;
 
     private EditText pass;
     private Button login;

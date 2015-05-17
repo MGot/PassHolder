@@ -104,14 +104,9 @@ public class PasswordList extends ActionBarActivity {
 
 
     public void newPass(String pass) {
-        /*
 
-
-               DODAWANIE HASŁĄ DO BAZY DANYCH
-
-
-         */
-        password.add(pass);
+            Toast.makeText(getApplicationContext(), "Position", Toast.LENGTH_SHORT).show();
+            password.add(pass);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,password);
         listView.setAdapter(adapter);
         Toast.makeText(getApplicationContext(), "You added new password!", Toast.LENGTH_SHORT).show();
@@ -149,13 +144,21 @@ public class PasswordList extends ActionBarActivity {
     }
 
     public void modifyPass(String pass) {
-        /*
+
+/*
+                try {
+   myDB = this.openOrCreateDatabase("DatabaseName", MODE_PRIVATE, null);
+
+   /* Create a Table in the Database.
+        myDB.execSQL("CREATE TABLE IF NOT EXISTS "
+                + TableName
+                + " (Field1 VARCHAR, Field2 INT(3));");
+ Insert data to a Table*/
+
+        //MODYFIKACJA HASŁĄ W BAZIE DANYCH
 
 
-               MODYFIKACJA HASŁĄ W BAZIE DANYCH
 
-
-         */
         password.set(actualPosition,pass);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,password);
         listView.setAdapter(adapter);
