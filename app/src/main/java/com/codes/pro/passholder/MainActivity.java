@@ -2,8 +2,10 @@ package com.codes.pro.passholder;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v4.content.IntentCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,15 +28,17 @@ public class MainActivity extends ActionBarActivity {
     private EditText pass;
     private Button login;
 
-    private String emailFromRegister;
-    private String passFromRegister;
+    public static String emailFromRegister = "non";
+    public static String passFromRegister = "non";
     public static String userEmail = "";
     public static HashCode userPass = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
 
         pass = (EditText) findViewById(R.id.editText);
@@ -49,14 +53,15 @@ public class MainActivity extends ActionBarActivity {
 
         SharedPreferences settings = getSharedPreferences("MyPrefsFile", 0);
 
-        if (settings.getBoolean("firstRun", true)) {               //the app is being launched for first time- register time
+        if (settings.getBoolean("firstRun", true) || userEmail.equals("") || userPass.equals(null)) {               //the app is being launched for first time- register time
             openFirstRun(); //go to register menu
 
             // record the fact that the app has been started at least once
             settings.edit().putBoolean("firstRun", false).commit();
         }
 
-        getUserInfos();
+        //Toast.makeText(MainActivity.this, "Asynchr?", Toast.LENGTH_SHORT).show();
+
 
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
@@ -67,18 +72,20 @@ public class MainActivity extends ActionBarActivity {
      */
     private void getUserInfos(){
         SharedPreferences infos = getSharedPreferences("userInfos", 0);
-        emailFromRegister = infos.getString("userEmail", "empty");
-        passFromRegister = infos.getString("userPass", "empty");
-        //Toast.makeText(MainActivity.this, "Email given " + emailFromRegister, Toast.LENGTH_SHORT).show();
-        //Toast.makeText(MainActivity.this, "Pass given " + passFromRegister, Toast.LENGTH_SHORT).show();
+        emailFromRegister = infos.getString("userEmail", "non");
+        passFromRegister = infos.getString("userPass", "non");
+        Toast.makeText(MainActivity.this, "Email given  " + emailFromRegister, Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "Pass given " + passFromRegister, Toast.LENGTH_SHORT).show();
     }
 
     /**
      * method to open registation frame -> FirstRunActivity
      */
     private void openFirstRun(){
-        Intent intent = new Intent(this, FirstRunActivity.class);
-        startActivity(intent);
+        Intent intent = new Intent(getApplicationContext(), FirstRunActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivityForResult(intent, 1);
     }
 
     @Override
@@ -101,21 +108,56 @@ public class MainActivity extends ActionBarActivity {
         super.onResume();
     }
 
+    /**
+     * method called after clicked on log in button, generally it checks if pass match
+     * @param v
+     */
     public void logIn(View v) {
 
         final HashCode password = Hashing.sha1().hashString(pass.getText().toString(), Charset.defaultCharset());
-        //Toast.makeText(MainActivity.this, "Pass1 " + password.toString() + " Pass2 " + passFromRegister, Toast.LENGTH_SHORT).show();
-        if(passFromRegister.equals(password.toString())) {
+        //Toast.makeText(MainActivity.this, "Pass1 " + password.toString() + " Pass2u " + userPass, Toast.LENGTH_SHORT).show();
+        if(userPass.toString().equals(password.toString())) {
             Intent manList = new Intent(getApplicationContext(), ManagerList.class);
             startActivity(manList);
         }
         else{
             Toast.makeText(MainActivity.this, "Wrong password! Try again", Toast.LENGTH_SHORT).show();
         }
-    } 
+    }
 
+    /**
+     * method to inform user how to use PassHolder
+     * @param v
+     */
     public void howTo(View v) {
         Intent howTo = new Intent(getApplicationContext(), HowToActivity.class);
         startActivity(howTo);
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+            Toast.makeText(MainActivity.this, "Hope you'll back here! Sayonara", Toast.LENGTH_SHORT).show();
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK){
+                emailFromRegister = data.getStringExtra("email");
+                passFromRegister = data.getStringExtra("password");
+
+                Toast.makeText(MainActivity.this, "Email from register " + emailFromRegister, Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Pass from register " + passFromRegister, Toast.LENGTH_SHORT).show();
+
+            }
+            if (resultCode == RESULT_CANCELED) {
+                //finish();
+            }
+        }
+    }//onActivityResult
+
 }
