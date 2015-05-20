@@ -20,6 +20,7 @@ import com.codes.pro.passholder.R;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 
+import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 
@@ -42,8 +43,6 @@ public class MainActivity extends ActionBarActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
 
         pass = (EditText) findViewById(R.id.editText);
         login = (Button) findViewById(R.id.loginButt);

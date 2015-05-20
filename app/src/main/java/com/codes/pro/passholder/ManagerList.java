@@ -19,6 +19,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.util.ArrayList;
 
 
@@ -35,19 +36,32 @@ public class ManagerList extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(MainActivity.myDB == null){
-            Toast.makeText(getApplicationContext(), "Database is not created yet ", Toast.LENGTH_SHORT).show();
-        }
-        else{
-            Cursor c = MainActivity.myDB.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
-            Toast.makeText(getApplicationContext(), "Database is created", Toast.LENGTH_SHORT).show();
-            if (c.moveToFirst()) {
-                while ( !c.isAfterLast() ) {
-                    Toast.makeText(ManagerList.this, "Table Name=> "+c.getString(0), Toast.LENGTH_LONG).show();
-                    c.moveToNext();
+
+        File database=getApplicationContext().getDatabasePath(MainActivity.
+                DATABASE_NAME);
+
+        if (!database.exists()) {
+            Toast.makeText(getApplicationContext(), "database is not created yet", Toast.LENGTH_SHORT).show();
+        } else {
+            try {
+                MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                Cursor c = MainActivity.myDB.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+
+                if (c.moveToFirst()) {
+                    while (!c.isAfterLast()) {
+                        //Toast.makeText(ManagerList.this, "Table Name=> " + c.getString(0), Toast.LENGTH_LONG).show();
+                        c.moveToNext();
+                    }
                 }
+            } catch(Exception e) {
+                Log.e("Error", "Error with creating database", e);
+            } finally {
+                if (MainActivity.myDB != null)
+                    MainActivity.myDB.close();
             }
+            Toast.makeText(getApplicationContext(), "database is already created", Toast.LENGTH_SHORT).show();
         }
+
         setContentView(R.layout.activity_manager_list);
         Toast.makeText(getApplicationContext(), "Long click on category to remove it", Toast.LENGTH_SHORT).show();
         adapter = new ManagerListAdapter(this,itemname);
@@ -218,5 +232,4 @@ public class ManagerList extends ActionBarActivity {
         cursor.close();
         return count > 0;
     }
-
 }
