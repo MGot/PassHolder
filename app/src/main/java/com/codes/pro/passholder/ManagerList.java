@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 
+//categoryActivity
 public class ManagerList extends ActionBarActivity {
 
     private ListView list;
@@ -33,6 +35,19 @@ public class ManagerList extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(MainActivity.myDB == null){
+            Toast.makeText(getApplicationContext(), "Database is not created yet ", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Cursor c = MainActivity.myDB.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
+            Toast.makeText(getApplicationContext(), "Database is created", Toast.LENGTH_SHORT).show();
+            if (c.moveToFirst()) {
+                while ( !c.isAfterLast() ) {
+                    Toast.makeText(ManagerList.this, "Table Name=> "+c.getString(0), Toast.LENGTH_LONG).show();
+                    c.moveToNext();
+                }
+            }
+        }
         setContentView(R.layout.activity_manager_list);
         Toast.makeText(getApplicationContext(), "Long click on category to remove it", Toast.LENGTH_SHORT).show();
         adapter = new ManagerListAdapter(this,itemname);
@@ -51,6 +66,7 @@ public class ManagerList extends ActionBarActivity {
                 listName = itemname.get(position);
                 Toast.makeText(getApplicationContext(), "Name " + listName, Toast.LENGTH_SHORT).show();
                 Intent pass = new Intent(getApplicationContext(),PasswordList.class);
+                pass.putExtra("categoryText", listName);
                 startActivity(pass);
             }
         });
@@ -111,12 +127,16 @@ public class ManagerList extends ActionBarActivity {
                 MainActivity.myDB.execSQL("CREATE TABLE IF NOT EXISTS "
                         + categoryText
                         + " (id INTEGER PRIMARY KEY AUTOINCREMENT, password TEXT);");
+
+                Toast.makeText(ManagerList.this, "TableExists  " + isTableExists(MainActivity.myDB,categoryText ), Toast.LENGTH_SHORT).show();
             }catch(Exception e) {
                 Log.e("Error", "Error with creating database", e);
             } finally {
                 if (MainActivity.myDB != null)
                     MainActivity.myDB.close();
             }
+
+
 
     }
 
@@ -152,15 +172,51 @@ public class ManagerList extends ActionBarActivity {
         alertDialog.show();
     }
 
-    public void removeCat(int position) {
-            /*
-                    USUWANE HASŁA Z BAZY DANYCH
 
-             */
+
+    public void removeCat(int position) {
+
+        Toast.makeText(ManagerList.this, "CategoryName  " + itemname.get(position), Toast.LENGTH_SHORT).show();
+        try {
+            MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                  /* Create a Table in the Database. */
+            MainActivity.myDB.execSQL("DROP TABLE IF EXISTS " + itemname.get(position) + ";");
+
+            Toast.makeText(ManagerList.this, "TableExists  "+ isTableExists(MainActivity.myDB,itemname.get(position) ), Toast.LENGTH_SHORT).show();
+        }catch(Exception e) {
+            Log.e("Error", "Error with creating database", e);
+        } finally {
+            if (MainActivity.myDB != null)
+                MainActivity.myDB.close();
+        }
+
+
 
         itemname.remove(position);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, itemname);
         list.setAdapter(adapter);
+    }
+
+    /**
+     * method to check if table in database exists
+     * @param db
+     * @param tableName
+     * @return true if exists, false otherwise
+     */
+    boolean isTableExists(SQLiteDatabase db, String tableName)
+    {
+        if (tableName == null || db == null || !db.isOpen())
+        {
+            return false;
+        }
+        Cursor cursor = db.rawQuery("SELECT COUNT(*) FROM sqlite_master WHERE type = ? AND name = ?", new String[] {"table", tableName});
+        if (!cursor.moveToFirst())
+        {
+            return false;
+        }
+        int count = cursor.getInt(0);
+        cursor.close();
+        return count > 0;
     }
 
 }

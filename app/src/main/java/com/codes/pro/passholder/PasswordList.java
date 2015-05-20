@@ -1,11 +1,15 @@
 package com.codes.pro.passholder;
 
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +25,7 @@ import java.util.List;
 
 public class PasswordList extends ActionBarActivity {
 
+    private String categoryText;
     private ListView listView;
     private List<String> password = new ArrayList<String>();
     private int actualPosition = -1;
@@ -31,6 +36,12 @@ public class PasswordList extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_password_list);
+        Bundle extras = getIntent().getExtras();
+        if(extras !=null) {
+            categoryText = extras.getString("categoryText");
+        }
+        Toast.makeText(PasswordList.this, "categoryText  " + categoryText, Toast.LENGTH_SHORT).show();
+
 
         listView = (ListView) findViewById(R.id.listview);
 
@@ -103,18 +114,39 @@ public class PasswordList extends ActionBarActivity {
     }
 
 
+    /**
+     * method to add new password to database
+     * @param pass
+     */
     public void newPass(String pass) {
+        Toast.makeText(PasswordList.this, "Password to add  " + pass, Toast.LENGTH_SHORT).show();
+        try {
+            MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
 
-            Toast.makeText(getApplicationContext(), "Position", Toast.LENGTH_SHORT).show();
-            password.add(pass);
+            ContentValues values = new ContentValues();
+            values.put("password", pass);
+            MainActivity.myDB.insert(categoryText, null, values);
+
+            displayDatabase(MainActivity.myDB, categoryText);
+        }catch(Exception e) {
+            Toast.makeText(getApplicationContext(), "ERROR with adding to databse", Toast.LENGTH_SHORT).show();
+            Log.e("Error", "Error with creating database", e);
+        } finally {
+            if (MainActivity.myDB != null)
+                MainActivity.myDB.close();
+        }
+
+        password.add(pass);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,password);
         listView.setAdapter(adapter);
         Toast.makeText(getApplicationContext(), "You added new password!", Toast.LENGTH_SHORT).show();
+
     }
 
     public void modifyDialog(View v) {
         if(actualPosition != -1) {
             final EditText input = new EditText(this);
+            final String oldPass = password.get(actualPosition);
             input.setText(password.get(actualPosition));
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
@@ -131,7 +163,7 @@ public class PasswordList extends ActionBarActivity {
                     })
                     .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            modifyPass(input.getText().toString());
+                            modifyPass(oldPass, input.getText().toString());
                             dialog.cancel();
                         }
                     });
@@ -143,23 +175,32 @@ public class PasswordList extends ActionBarActivity {
         }
     }
 
-    public void modifyPass(String pass) {
+    /**
+     * method to modify password in database
+     * @param oldPass
+     * @param newPass
+     */
+    public void modifyPass(String oldPass, String newPass) {
 
-/*
-                try {
-   myDB = this.openOrCreateDatabase("DatabaseName", MODE_PRIVATE, null);
+        Toast.makeText(PasswordList.this, "oldPass  " + oldPass + " newPass " + newPass, Toast.LENGTH_SHORT).show();
+        try {
+            MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+            String updateQuery = "UPDATE "+  categoryText + " SET password='"+newPass+"' WHERE password='"+ oldPass +"'";
+            MainActivity.myDB.execSQL(updateQuery);
 
-   /* Create a Table in the Database.
-        myDB.execSQL("CREATE TABLE IF NOT EXISTS "
-                + TableName
-                + " (Field1 VARCHAR, Field2 INT(3));");
- Insert data to a Table*/
+            //displayDatabase(MainActivity.myDB, categoryText);
+            //Toast.makeText(ManagerList.this, "TableExists  "+ isTableExists(MainActivity.myDB,itemname.get(position) ), Toast.LENGTH_SHORT).show();
+        }catch(Exception e) {
+            Toast.makeText(getApplicationContext(), "ERROR with modify to database", Toast.LENGTH_SHORT).show();
+            Log.e("Error", "Error with creating database", e);
+        } finally {
+            if (MainActivity.myDB != null)
+                MainActivity.myDB.close();
+        }
 
-        //MODYFIKACJA HASŁĄ W BAZIE DANYCH
 
 
-
-        password.set(actualPosition,pass);
+        password.set(actualPosition,newPass);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,password);
         listView.setAdapter(adapter);
         Toast.makeText(getApplicationContext(), "You modified password!", Toast.LENGTH_SHORT).show();
@@ -188,7 +229,8 @@ public class PasswordList extends ActionBarActivity {
                     public void onClick(DialogInterface dialog,int id) {
                         // if this button is clicked, close
                         // current activity
-                        removePass();
+
+                        removePass(password.get(actualPosition));
                         dialog.cancel();
                     }
                 });
@@ -200,13 +242,28 @@ public class PasswordList extends ActionBarActivity {
         alertDialog.show();
     }
 
-    public void removePass() {
+    /**
+     * method to delete password from database
+     * @param pass
+     */
+    public void removePass(String pass) {
         if(actualPosition != -1) {
 
-            /*
-                    USUWANE HASŁA Z BAZY DANYCH
+            Toast.makeText(PasswordList.this, "Password to remove  " + pass, Toast.LENGTH_SHORT).show();
+            try {
+                MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                String deleteQuery = "DELETE FROM " +  categoryText + " Where password='"+ pass +"'";
 
-             */
+                MainActivity.myDB.execSQL(deleteQuery);
+                //displayDatabase(MainActivity.myDB, categoryText);
+
+            }catch(Exception e) {
+                Toast.makeText(getApplicationContext(), "ERROR with delete from database", Toast.LENGTH_SHORT).show();
+                Log.e("Error", "Error with creating database", e);
+            } finally {
+                if (MainActivity.myDB != null)
+                    MainActivity.myDB.close();
+            }
 
             password.remove(actualPosition);
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice, password);
@@ -215,5 +272,35 @@ public class PasswordList extends ActionBarActivity {
         } else {
             Toast.makeText(getApplicationContext(), "Select position to remove!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * method to display all rows from database
+     * @param db
+     * @param tableName
+     */
+    private void displayDatabase(SQLiteDatabase db, String tableName)
+    {
+        ArrayList<String> values = new ArrayList<String>();
+        Cursor  cursor = db.rawQuery("SELECT * FROM " + tableName, null);
+        Toast.makeText(getApplicationContext(), "number of Rows " + cursor.getCount(), Toast.LENGTH_SHORT).show();
+        if (cursor != null) {
+            if (cursor .moveToFirst()) {
+
+                while (cursor.isAfterLast() == false) {
+                    String name = cursor.getString(cursor
+                            .getColumnIndex("password"));
+
+                    values.add(name);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+        }
+
+        for(int i = 0; i < values.size(); i++){
+            Toast.makeText(getApplicationContext(), "values " + values.get(i), Toast.LENGTH_SHORT).show();
+        }
+
     }
 }

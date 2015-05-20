@@ -112,6 +112,7 @@ public class MainActivity extends ActionBarActivity {
         super.onResume();
     }
 
+
     /**
      * method called after clicked on log in button, generally it checks if pass match
      * @param v
