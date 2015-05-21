@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,24 @@ public class PasswordList extends ActionBarActivity {
                 //Toast.makeText(getApplicationContext(), "You selected item number: " + actualPosition, Toast.LENGTH_SHORT).show();
             }
         };
+
+        try {
+            MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+            ArrayList<String> values = getPasswordsFromDatabase(MainActivity.myDB, categoryText);
+            for(int i = 0; i < values.size(); i++)
+            {
+                password.add(values.get(i));
+                //adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,password);
+                //listView.setAdapter(adapter);
+            }
+
+            //displayDatabase(MainActivity.myDB, categoryText);
+        } catch(Exception e) {
+            Log.e("Error", "Error with creating database", e);
+        } finally {
+            if (MainActivity.myDB != null)
+                MainActivity.myDB.close();
+        }
 
         listView.setOnItemClickListener(itemClickListener);
     }
@@ -301,6 +320,32 @@ public class PasswordList extends ActionBarActivity {
         for(int i = 0; i < values.size(); i++){
             Toast.makeText(getApplicationContext(), "values " + values.get(i), Toast.LENGTH_SHORT).show();
         }
+    }
 
+    /**
+     * method to get all passwords from database
+     * @param db
+     * @param tableName
+     * @return all passwords in ArrayList<String>
+     */
+    private ArrayList<String> getPasswordsFromDatabase(SQLiteDatabase db, String tableName){
+        ArrayList<String> values = new ArrayList<String>();
+        Cursor  cursor = db.rawQuery("SELECT password FROM " + tableName, null);
+        //Toast.makeText(getApplicationContext(), "number of Rows " + cursor.getCount(), Toast.LENGTH_SHORT).show();
+        if (cursor != null) {
+            if (cursor .moveToFirst()) {
+
+                while (cursor.isAfterLast() == false) {
+                    String name = cursor.getString(cursor
+                            .getColumnIndex("password"));
+
+                    values.add(name);
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+        }
+
+        return values;
     }
 }

@@ -37,31 +37,6 @@ public class ManagerList extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        File database=getApplicationContext().getDatabasePath(MainActivity.
-                DATABASE_NAME);
-
-        if (!database.exists()) {
-            Toast.makeText(getApplicationContext(), "database is not created yet", Toast.LENGTH_SHORT).show();
-        } else {
-            try {
-                MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
-                Cursor c = MainActivity.myDB.rawQuery("SELECT name FROM sqlite_master WHERE type='table'", null);
-
-                if (c.moveToFirst()) {
-                    while (!c.isAfterLast()) {
-                        //Toast.makeText(ManagerList.this, "Table Name=> " + c.getString(0), Toast.LENGTH_LONG).show();
-                        c.moveToNext();
-                    }
-                }
-            } catch(Exception e) {
-                Log.e("Error", "Error with creating database", e);
-            } finally {
-                if (MainActivity.myDB != null)
-                    MainActivity.myDB.close();
-            }
-            Toast.makeText(getApplicationContext(), "database is already created", Toast.LENGTH_SHORT).show();
-        }
-
         setContentView(R.layout.activity_manager_list);
         Toast.makeText(getApplicationContext(), "Long click on category to remove it", Toast.LENGTH_SHORT).show();
         adapter = new ManagerListAdapter(this,itemname);
@@ -91,6 +66,33 @@ public class ManagerList extends ActionBarActivity {
                 return true;
             }
         });
+
+        File database=getApplicationContext().getDatabasePath(MainActivity.
+                DATABASE_NAME);
+
+        if (!database.exists()) {
+            Toast.makeText(getApplicationContext(), "database is not created yet", Toast.LENGTH_SHORT).show();
+        } else {
+            try {
+                MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                Cursor c = MainActivity.myDB.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name !='android_metadata' AND name != 'sqlite_sequence'", null);
+
+                if (c.moveToFirst()) {
+                    while (!c.isAfterLast()) {
+                        //Toast.makeText(ManagerList.this, "Table Name=> " + c.getString(0), Toast.LENGTH_LONG).show();
+                        itemname.add(c.getString(0));
+                        list.setAdapter(arrayAdapter);
+                        c.moveToNext();
+                    }
+                }
+            } catch(Exception e) {
+                Log.e("Error", "Error with creating database", e);
+            } finally {
+                if (MainActivity.myDB != null)
+                    MainActivity.myDB.close();
+            }
+            Toast.makeText(getApplicationContext(), "database is already created", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
