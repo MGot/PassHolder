@@ -50,8 +50,6 @@ public class ManagerList extends ListFragment {
         View detailsFrame = getActivity().findViewById(R.id.passwordFrag);
         Toast.makeText(getActivity(), "Long click on category to show options", Toast.LENGTH_SHORT).show();
 
-        //itemname.add("dwa chuje");
-
 
         File database=getActivity().getDatabasePath(MainActivity.
                 DATABASE_NAME);
@@ -222,14 +220,19 @@ public class ManagerList extends ListFragment {
                 })
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        /*
+                       //changing category name
+                        try {
+                            MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME,MODE_PRIVATE, null);
+                            String query = "ALTER TABLE " + itemname.get(actualPosition) + " RENAME TO " + String.valueOf(input.getText());
+                            MainActivity.myDB.execSQL(query);
 
-
-                                ZMIANA NAZWY TABELI W BAZIE
-
-
-
-                         */
+                            Toast.makeText(getActivity(), "TableExists  " + isTableExists(MainActivity.myDB,categoryText ), Toast.LENGTH_SHORT).show();
+                        }catch(Exception e) {
+                            Log.e("Error", "Error with creating database", e);
+                        } finally {
+                            if (MainActivity.myDB != null)
+                                MainActivity.myDB.close();
+                        }
 
                         boolean check = false;
                         for (int i = 0; i < itemname.size(); ++i) {
