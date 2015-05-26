@@ -109,6 +109,14 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public void onResume() {
         super.onResume();
+        Toast.makeText(MainActivity.this, "Exit", Toast.LENGTH_SHORT).show();
+
+        if(getIntent().getBooleanExtra("closeApp", false))
+        {
+            Toast.makeText(MainActivity.this, "Exit1", Toast.LENGTH_SHORT).show();
+            android.os.Process.killProcess(android.os.Process.myPid());
+            finish();
+        }
     }
 
 
@@ -151,6 +159,10 @@ public class MainActivity extends ActionBarActivity {
 
         if (requestCode == 1) {
             if(resultCode == RESULT_OK){
+                if(getIntent().getBooleanExtra("closeApp", false))
+                {
+                    finish();
+                }
                 emailFromRegister = data.getStringExtra("email");
                 passFromRegister = data.getStringExtra("password");
 
