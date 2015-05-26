@@ -34,6 +34,7 @@ public class MainActivity extends ActionBarActivity {
     public static String passFromRegister = "non";
     public static String userEmail = "";
     public static HashCode userPass = null;
+    public static String userPassString = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +53,15 @@ public class MainActivity extends ActionBarActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
 
         SharedPreferences settings = getSharedPreferences("MyPrefsFile", 0);
+        SharedPreferences infos = getSharedPreferences("userInfos", 0);
+        userEmail = infos.getString("userEmail", "");
+        userPassString = infos.getString("userPass", "");
+        //userPass = userPassString.hashCode();
 
-        if (settings.getBoolean("firstRun", true) || userEmail.equals("") || userPass.equals(null)) {               //the app is being launched for first time- register time
+        if (settings.getBoolean("firstRun", true) || userEmail.equals("") || userPassString.equals("")) {               //the app is being launched for first time- register time
             openFirstRun(); //go to register menu
+            if(userEmail.equals(""))
+                Toast.makeText(MainActivity.this, "Email empty  ", Toast.LENGTH_SHORT).show();
 
             // record the fact that the app has been started at least once
             settings.edit().putBoolean("firstRun", false).commit();
@@ -171,7 +178,7 @@ public class MainActivity extends ActionBarActivity {
 
         final HashCode password = Hashing.sha1().hashString(pass.getText().toString(), Charset.defaultCharset());
         //Toast.makeText(MainActivity.this, "Pass1 " + password.toString() + " Pass2u " + userPass, Toast.LENGTH_SHORT).show();
-        if(userPass.toString().equals(password.toString())) {
+        if(userPassString.equals(password.toString())) {
             Intent manList = new Intent(getApplicationContext(), ManagerActivity.class);
             startActivity(manList);
         }
@@ -191,7 +198,7 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME)) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             Toast.makeText(MainActivity.this, "Hope you'll back here! Sayonara", Toast.LENGTH_SHORT).show();
             try {
                 encryptDatabase();
