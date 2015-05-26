@@ -3,31 +3,28 @@ package com.codes.pro.passholder;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v4.content.IntentCompat;
-import android.support.v7.app.ActionBarActivity;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import com.codes.pro.passholder.R;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 
-import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity {
 
     public static final String DATABASE_NAME = "PASSWORDS_DB";
+    public static final String ENCRYPTED_DATABASE = "ENCRYPTED_PASSWORDS_DB";
     public static SQLiteDatabase myDB;
 
     private EditText pass;
@@ -114,9 +111,55 @@ public class MainActivity extends ActionBarActivity {
         if(getIntent().getBooleanExtra("closeApp", false))
         {
             Toast.makeText(MainActivity.this, "Exit1", Toast.LENGTH_SHORT).show();
+            try {
+                encryptDatabase();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             android.os.Process.killProcess(android.os.Process.myPid());
+
             finish();
         }
+    }
+
+    private void encryptDatabase()  throws IOException {
+
+
+
+        try {
+            MainActivity.myDB = openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+            String query = "ATTACH DATABASE 'encrypted.db' AS encrypted KEY 'secret';";
+            myDB.execSQL(query);
+            query = "CREATE TABLE encrypted.t1(a,b);";
+            myDB.execSQL(query);
+            query = "INSERT INTO encrypted.t1 SELECT * FROM t1;";
+            myDB.execSQL(query);
+            query = "DETACH DATABASE encrypted;";
+
+            myDB.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (myDB.isOpen())
+                myDB.close();
+        }
+    }
+
+    /**
+     * Check if the database exist
+     *
+     * @return true if it exists, false if it doesn't
+     */
+    private boolean checkDataBase() {
+        SQLiteDatabase checkDB = null;
+        try {
+            checkDB = SQLiteDatabase.openDatabase(myDB.getPath(), null,
+                    SQLiteDatabase.OPEN_READONLY);
+            checkDB.close();
+        } catch (SQLiteException e) {
+            // database doesn't exist yet.
+        }
+        return checkDB != null;
     }
 
 
@@ -148,8 +191,13 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
+        if ((keyCode == KeyEvent.KEYCODE_BACK || keyCode == KeyEvent.KEYCODE_HOME)) {
             Toast.makeText(MainActivity.this, "Hope you'll back here! Sayonara", Toast.LENGTH_SHORT).show();
+            try {
+                encryptDatabase();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             finish();
         }
         return super.onKeyDown(keyCode, event);
