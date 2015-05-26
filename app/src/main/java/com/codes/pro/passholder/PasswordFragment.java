@@ -233,7 +233,7 @@ public class PasswordFragment extends ListFragment {
     public void removePassword(final int position) {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
         alertDialogBuilder.setTitle("Remove password");
-
+        final String pass = password.get(position);
         alertDialogBuilder
                 .setMessage("Do You really want to remove " + password.get(position) + " ?")
                 .setCancelable(false)
@@ -244,13 +244,21 @@ public class PasswordFragment extends ListFragment {
                 })
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        /*
+                        Toast.makeText(getActivity(), "Password to remove " + pass, Toast.LENGTH_SHORT).show();
+                        try {
+                            MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                            String deleteQuery = "DELETE FROM " +  name + " Where password='"+ pass +"'";
 
+                            MainActivity.myDB.execSQL(deleteQuery);
+                            //displayDatabase(MainActivity.myDB, categoryText);
 
-                            Usuwanie hasła z tabeli
-
-
-                         */
+                        }catch(Exception e) {
+                            Toast.makeText(getActivity(), "ERROR with delete from database", Toast.LENGTH_SHORT).show();
+                            Log.e("Error", "Error with creating database", e);
+                        } finally {
+                            if (MainActivity.myDB != null)
+                                MainActivity.myDB.close();
+                        }
                         password.remove(position);
                         ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, password);
                         listView.setAdapter(adapter);
