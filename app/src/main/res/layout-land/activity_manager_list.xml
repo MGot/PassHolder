@@ -1,0 +1,35 @@
+<!--
+ Top-level content view for the layout fragment sample.  This version is
+     for display when in landscape: we can fit both titles and dialog.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+
+    android:orientation="horizontal" >
+
+    <fragment
+        android:id="@+id/categories"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        class="com.codes.pro.passholder.ManagerList" />
+
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:id="@+id/passwordFrag"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <ListView
+            android:id="@+id/listviewFrag"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:choiceMode="singleChoice"
+            android:layout_weight="1" />
+    </LinearLayout>
+
+
+</LinearLayout>

@@ -18,20 +18,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".PasswordList"
-            android:label="@string/title_activity_password_list" >
-        </activity>
-        <activity
-            android:name=".ManagerList"
-            android:label="@string/title_activity_manager_list" >
-        </activity>
-        <activity
             android:name=".FirstRunActivity"
             android:label="@string/title_activity_first_run" >
         </activity>
         <activity
             android:name=".HowToActivity"
             android:label="@string/title_activity_how_to" >
+        </activity>
+        <activity
+            android:name=".ManagerActivity"
+            android:label="@string/title_activity_manager" >
+        </activity>
+        <activity
+            android:name=".PasswordActivity"
+            android:label="@string/title_activity_password" >
         </activity>
     </application>
 

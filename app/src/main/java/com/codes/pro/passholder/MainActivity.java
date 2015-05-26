@@ -121,7 +121,7 @@ public class MainActivity extends ActionBarActivity {
         final HashCode password = Hashing.sha1().hashString(pass.getText().toString(), Charset.defaultCharset());
         //Toast.makeText(MainActivity.this, "Pass1 " + password.toString() + " Pass2u " + userPass, Toast.LENGTH_SHORT).show();
         if(userPass.toString().equals(password.toString())) {
-            Intent manList = new Intent(getApplicationContext(), ManagerList.class);
+            Intent manList = new Intent(getApplicationContext(), ManagerActivity.class);
             startActivity(manList);
         }
         else{

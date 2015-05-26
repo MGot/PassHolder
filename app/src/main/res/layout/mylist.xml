@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1"
-    android:id="@+id/listLayout">
+    android:orientation="horizontal" >
 
     <TextView
-        android:layout_width="match_parent"
+        android:id="@+id/item"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Password for"
-        android:id="@+id/textView"
-        android:layout_weight="0.50"
-        android:textSize="25dp" />
+        android:text="Medium Text"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:padding="2dp"
+        android:textColor="#DF1010" />
 
 </LinearLayout>

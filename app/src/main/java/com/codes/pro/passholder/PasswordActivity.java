@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class PasswordList extends ActionBarActivity {
+public class PasswordActivity extends ActionBarActivity {
 
     private String categoryText;
     private ListView listView;
@@ -41,7 +41,7 @@ public class PasswordList extends ActionBarActivity {
         if(extras !=null) {
             categoryText = extras.getString("categoryText");
         }
-        Toast.makeText(PasswordList.this, "categoryText  " + categoryText, Toast.LENGTH_SHORT).show();
+        Toast.makeText(PasswordActivity.this, "categoryText  " + categoryText, Toast.LENGTH_SHORT).show();
 
 
         listView = (ListView) findViewById(R.id.listview);
@@ -138,28 +138,37 @@ public class PasswordList extends ActionBarActivity {
      * @param pass
      */
     public void newPass(String pass) {
-        Toast.makeText(PasswordList.this, "Password to add  " + pass, Toast.LENGTH_SHORT).show();
-        try {
-            MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
-
-            ContentValues values = new ContentValues();
-            values.put("password", pass);
-            MainActivity.myDB.insert(categoryText, null, values);
-
-            displayDatabase(MainActivity.myDB, categoryText);
-        }catch(Exception e) {
-            Toast.makeText(getApplicationContext(), "ERROR with adding to databse", Toast.LENGTH_SHORT).show();
-            Log.e("Error", "Error with creating database", e);
-        } finally {
-            if (MainActivity.myDB != null)
-                MainActivity.myDB.close();
+        boolean check = false;
+        for (int i = 0; i < password.size(); ++i) {
+            if (password.get(i).equals(pass)) {
+                check = true;
+                break;
+            }
         }
 
-        password.add(pass);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,password);
-        listView.setAdapter(adapter);
-        Toast.makeText(getApplicationContext(), "You added new password!", Toast.LENGTH_SHORT).show();
+        if(check) {
+            Toast.makeText(getApplicationContext(), "Password: " + pass + " exists!", Toast.LENGTH_SHORT).show();
+        } else {
+            try {
+                MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
 
+                ContentValues values = new ContentValues();
+                values.put("password", pass);
+                MainActivity.myDB.insert(categoryText, null, values);
+
+                displayDatabase(MainActivity.myDB, categoryText);
+            }catch(Exception e) {
+                Toast.makeText(getApplicationContext(), "ERROR with adding to databse", Toast.LENGTH_SHORT).show();
+                Log.e("Error", "Error with creating database", e);
+            } finally {
+                if (MainActivity.myDB != null)
+                    MainActivity.myDB.close();
+            }
+            password.add(pass);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,password);
+            listView.setAdapter(adapter);
+            Toast.makeText(getApplicationContext(), "You added new password!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void modifyDialog(View v) {
@@ -201,28 +210,38 @@ public class PasswordList extends ActionBarActivity {
      */
     public void modifyPass(String oldPass, String newPass) {
 
-        Toast.makeText(PasswordList.this, "oldPass  " + oldPass + " newPass " + newPass, Toast.LENGTH_SHORT).show();
-        try {
-            MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
-            String updateQuery = "UPDATE "+  categoryText + " SET password='"+newPass+"' WHERE password='"+ oldPass +"'";
-            MainActivity.myDB.execSQL(updateQuery);
+        //Toast.makeText(PasswordActivity.this, "oldPass  " + oldPass + " newPass " + newPass, Toast.LENGTH_SHORT).show();
 
-            //displayDatabase(MainActivity.myDB, categoryText);
-            //Toast.makeText(ManagerList.this, "TableExists  "+ isTableExists(MainActivity.myDB,itemname.get(position) ), Toast.LENGTH_SHORT).show();
-        }catch(Exception e) {
-            Toast.makeText(getApplicationContext(), "ERROR with modify to database", Toast.LENGTH_SHORT).show();
-            Log.e("Error", "Error with creating database", e);
-        } finally {
-            if (MainActivity.myDB != null)
-                MainActivity.myDB.close();
+        boolean check = false;
+        for (int i = 0; i < password.size(); ++i) {
+            if (password.get(i).equals(newPass)) {
+                check = true;
+                break;
+            }
         }
 
+        if(check) {
+            Toast.makeText(getApplicationContext(), "Password: " + newPass + " exists!", Toast.LENGTH_SHORT).show();
+        } else {
+            try {
+                MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                String updateQuery = "UPDATE " + categoryText + " SET password='" + newPass + "' WHERE password='" + oldPass + "'";
+                MainActivity.myDB.execSQL(updateQuery);
 
-
-        password.set(actualPosition,newPass);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,password);
-        listView.setAdapter(adapter);
-        Toast.makeText(getApplicationContext(), "You modified password!", Toast.LENGTH_SHORT).show();
+                //displayDatabase(MainActivity.myDB, categoryText);
+                //Toast.makeText(ManagerList.this, "TableExists  "+ isTableExists(MainActivity.myDB,itemname.get(position) ), Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(getApplicationContext(), "ERROR with modify to database", Toast.LENGTH_SHORT).show();
+                Log.e("Error", "Error with creating database", e);
+            } finally {
+                if (MainActivity.myDB != null)
+                    MainActivity.myDB.close();
+            }
+            password.set(actualPosition,newPass);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_single_choice,password);
+            listView.setAdapter(adapter);
+            Toast.makeText(getApplicationContext(), "You modified password!", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -268,7 +287,7 @@ public class PasswordList extends ActionBarActivity {
     public void removePass(String pass) {
         if(actualPosition != -1) {
 
-            Toast.makeText(PasswordList.this, "Password to remove  " + pass, Toast.LENGTH_SHORT).show();
+            Toast.makeText(PasswordActivity.this, "Password to remove  " + pass, Toast.LENGTH_SHORT).show();
             try {
                 MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
                 String deleteQuery = "DELETE FROM " +  categoryText + " Where password='"+ pass +"'";
