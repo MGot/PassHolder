@@ -30,11 +30,9 @@ public class MainActivity extends ActionBarActivity {
     private EditText pass;
     private Button login;
 
-    public static String emailFromRegister = "non";
-    public static String passFromRegister = "non";
     public static String userEmail = "";
-    public static HashCode userPass = null;
-    public static String userPassString = "";
+    public static HashCode userPass = null;     //pass from FirstRunActivity, generally just use in first open application
+    public static String userPassString = "";   //pass from SharedPreferenced
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +54,6 @@ public class MainActivity extends ActionBarActivity {
         SharedPreferences infos = getSharedPreferences("userInfos", 0);
         userEmail = infos.getString("userEmail", "");
         userPassString = infos.getString("userPass", "");
-        //userPass = userPassString.hashCode();
 
         if (settings.getBoolean("firstRun", true) || userEmail.equals("") || userPassString.equals("")) {               //the app is being launched for first time- register time
             openFirstRun(); //go to register menu
@@ -72,17 +69,6 @@ public class MainActivity extends ActionBarActivity {
 
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
-    }
-
-    /**
-     * method to get email and pass from registered user
-     */
-    private void getUserInfos(){
-        SharedPreferences infos = getSharedPreferences("userInfos", 0);
-        emailFromRegister = infos.getString("userEmail", "non");
-        passFromRegister = infos.getString("userPass", "non");
-        Toast.makeText(MainActivity.this, "Email given  " + emailFromRegister, Toast.LENGTH_SHORT).show();
-        Toast.makeText(MainActivity.this, "Pass given " + passFromRegister, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -177,8 +163,8 @@ public class MainActivity extends ActionBarActivity {
     public void logIn(View v) {
 
         final HashCode password = Hashing.sha1().hashString(pass.getText().toString(), Charset.defaultCharset());
-        //Toast.makeText(MainActivity.this, "Pass1 " + password.toString() + " Pass2u " + userPass, Toast.LENGTH_SHORT).show();
-        if(userPassString.equals(password.toString())) {
+        //Toast.makeText(MainActivity.this, "Pass1 " + password.toString() + " Pass2u " + userPassString, Toast.LENGTH_SHORT).show();
+        if(userPassString.equals(password.toString()) || userPass.toString().equals(password.toString())) {
             Intent manList = new Intent(getApplicationContext(), ManagerActivity.class);
             startActivity(manList);
         }
@@ -213,20 +199,11 @@ public class MainActivity extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 1) {
-            if(resultCode == RESULT_OK){
+            if(resultCode == RESULT_OK || resultCode == RESULT_CANCELED){
                 if(getIntent().getBooleanExtra("closeApp", false))
                 {
                     finish();
                 }
-                emailFromRegister = data.getStringExtra("email");
-                passFromRegister = data.getStringExtra("password");
-
-                Toast.makeText(MainActivity.this, "Email from register " + emailFromRegister, Toast.LENGTH_SHORT).show();
-                Toast.makeText(MainActivity.this, "Pass from register " + passFromRegister, Toast.LENGTH_SHORT).show();
-
-            }
-            if (resultCode == RESULT_CANCELED) {
-                //finish();
             }
         }
     }//onActivityResult
