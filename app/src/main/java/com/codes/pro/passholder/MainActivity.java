@@ -169,7 +169,8 @@ public class MainActivity extends ActionBarActivity {
             startActivity(manList);
         }
         else{
-            Toast.makeText(MainActivity.this, "Wrong password! Try again", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(MainActivity.this, "Exit", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Wrong password!", Toast.LENGTH_SHORT).show();
         }
     }
 
