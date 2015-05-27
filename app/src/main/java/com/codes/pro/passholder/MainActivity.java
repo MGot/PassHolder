@@ -169,7 +169,6 @@ public class MainActivity extends ActionBarActivity {
             startActivity(manList);
         }
         else{
-            //Toast.makeText(MainActivity.this, "Exit", Toast.LENGTH_SHORT).show();
             Toast.makeText(getApplicationContext(), "Wrong password!", Toast.LENGTH_SHORT).show();
         }
     }
@@ -200,13 +199,11 @@ public class MainActivity extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 1) {
-            if(resultCode == RESULT_OK || resultCode == RESULT_CANCELED){
-                if(getIntent().getBooleanExtra("closeApp", false))
-                {
+            if (resultCode == RESULT_OK || resultCode == RESULT_CANCELED) {
+                if (getIntent().getBooleanExtra("closeApp", false)) {
                     finish();
                 }
             }
         }
-    }//onActivityResult
-
+    }
 }

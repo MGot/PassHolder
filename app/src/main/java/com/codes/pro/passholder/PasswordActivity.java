@@ -4,11 +4,10 @@ import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,7 +18,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -246,38 +244,33 @@ public class PasswordActivity extends ActionBarActivity {
 
 
     public void removeDialog(View v) {
-        String newPass = "";
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+        if(actualPosition != -1) {
+            String newPass = "";
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
 
-        // set title
-        alertDialogBuilder.setTitle("Do You really want to remove this password?");
+            // set title
+            alertDialogBuilder.setTitle("Do You really want to remove this password?");
 
-        // set dialog message
-        alertDialogBuilder
-                .setMessage("Click yes to remove \"" + password.get(actualPosition) + "\"")
-                .setCancelable(false)
-                .setNegativeButton("No",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
-                        // if this button is clicked, just close
-                        // the dialog box and do nothing
-                        dialog.cancel();
-                    }
-                })
-                .setPositiveButton("Yes",new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,int id) {
-                        // if this button is clicked, close
-                        // current activity
-
-                        removePass(password.get(actualPosition));
-                        dialog.cancel();
-                    }
-                });
-
-        // create alert dialog
-        AlertDialog alertDialog = alertDialogBuilder.create();
-
-        // show it
-        alertDialog.show();
+            // set dialog message
+            alertDialogBuilder
+                    .setMessage("Click yes to remove \"" + password.get(actualPosition) + "\"")
+                    .setCancelable(false)
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    })
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            removePass(password.get(actualPosition));
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+        } else {
+            Toast.makeText(getApplicationContext(), "Select position to remove!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

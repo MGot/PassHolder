@@ -29,7 +29,6 @@ public class ManagerList extends ListFragment {
     private boolean mDualPane;
     private int mCurCheckPosition = 0;
     private int actualPosition = -1;
-
     private String categoryText;
     private ArrayList<String> itemname = new ArrayList<String>();
     private String listName;
@@ -71,7 +70,7 @@ public class ManagerList extends ListFragment {
 
 
         if(itemname.size() == 0) {
-            newCategory();
+            newCategory(0);
         }
 
         listView = this.getListView();
@@ -79,18 +78,6 @@ public class ManagerList extends ListFragment {
 
         setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemname));
 
-        //listView.setAdapter(adapter);
-
-
-        /*listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                listName = itemname.get(position);
-                Toast.makeText(getActivity(), "Name " + listName, Toast.LENGTH_SHORT).show();
-                Intent pass = new Intent(getActivity(),PasswordActivity.class);
-                pass.putExtra("categoryText", listName);
-                startActivity(pass);
-            }
-        });*/
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
@@ -169,24 +156,71 @@ public class ManagerList extends ListFragment {
                 })
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        boolean check = false;
-                        for (int i = 0; i < itemname.size(); ++i) {
-                            if(itemname.get(i).equals(String.valueOf(input.getText()))) {
-                                check = true;
-                                break;
+                        if (String.valueOf(input.getText()).equals("")) {
+                            Toast.makeText(getActivity(), "Set name of Your category!", Toast.LENGTH_SHORT).show();
+                            newCategory();
+                        } else {
+
+                            boolean check = false;
+                            for (int i = 0; i < itemname.size(); ++i) {
+                                if (itemname.get(i).equals(String.valueOf(input.getText()))) {
+                                    check = true;
+                                    break;
+                                }
+                            }
+
+                            if (check) {
+                                Toast.makeText(getActivity(), "Category named: " + String.valueOf(input.getText()) + " exists!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                createTable(String.valueOf(input.getText()));
+                                itemname.add(String.valueOf(input.getText()));
+                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemname);
+                                listView.setAdapter(adapter);
+                                Toast.makeText(getActivity(), "You added new category!", Toast.LENGTH_SHORT).show();
                             }
                         }
+                        dialog.cancel();
+                    }
+                });
 
-                        if(check) {
-                            Toast.makeText(getActivity(), "Category named: " + String.valueOf(input.getText()) + " exists!", Toast.LENGTH_SHORT).show();
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+    public void newCategory(int numOf) {
+        final EditText input = new EditText(getActivity());
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+
+        alertDialogBuilder.setTitle("New category");
+
+        alertDialogBuilder
+                .setMessage("Write category name and click 'Yes' to add it")
+                .setView(input)
+                .setCancelable(false)
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (String.valueOf(input.getText()).equals("")) {
+                            Toast.makeText(getActivity(), "Set name of Your category!", Toast.LENGTH_SHORT).show();
+                            newCategory(0);
                         } else {
-                            createTable(String.valueOf(input.getText()));
-                            itemname.add(String.valueOf(input.getText()));
-                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemname);
-                            listView.setAdapter(adapter);
-                            Toast.makeText(getActivity(), "You added new category!", Toast.LENGTH_SHORT).show();
-                        }
 
+                            boolean check = false;
+                            for (int i = 0; i < itemname.size(); ++i) {
+                                if (itemname.get(i).equals(String.valueOf(input.getText()))) {
+                                    check = true;
+                                    break;
+                                }
+                            }
+
+                            if (check) {
+                                Toast.makeText(getActivity(), "Category named: " + String.valueOf(input.getText()) + " exists!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                createTable(String.valueOf(input.getText()));
+                                itemname.add(String.valueOf(input.getText()));
+                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemname);
+                                listView.setAdapter(adapter);
+                                Toast.makeText(getActivity(), "You added new category!", Toast.LENGTH_SHORT).show();
+                            }
+                        }
                         dialog.cancel();
                     }
                 });
@@ -212,36 +246,40 @@ public class ManagerList extends ListFragment {
                 })
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                       //changing category name
-                        try {
-                            MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME,MODE_PRIVATE, null);
-                            String query = "ALTER TABLE " + itemname.get(actualPosition) + " RENAME TO " + String.valueOf(input.getText());
-                            MainActivity.myDB.execSQL(query);
-
-                            Toast.makeText(getActivity(), "TableExists  " + isTableExists(MainActivity.myDB,categoryText ), Toast.LENGTH_SHORT).show();
-                        }catch(Exception e) {
-                            Log.e("Error", "Error with creating database", e);
-                        } finally {
-                            if (MainActivity.myDB != null)
-                                MainActivity.myDB.close();
-                        }
-
-                        boolean check = false;
-                        for (int i = 0; i < itemname.size(); ++i) {
-                            if (itemname.get(i).equals(String.valueOf(input.getText()))) {
-                                check = true;
-                                break;
-                            }
-                        }
-
-                        if (check) {
-                            Toast.makeText(getActivity(), "Category named: " + String.valueOf(input.getText()) + " exists!", Toast.LENGTH_SHORT).show();
+                        if (String.valueOf(input.getText()).equals("")) {
+                            Toast.makeText(getActivity(), "Set name of Your category!", Toast.LENGTH_SHORT).show();
+                            modifyCategory();
                         } else {
-                            createTable(String.valueOf(input.getText()));
-                            itemname.set(actualPosition, String.valueOf(input.getText()));
-                            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemname);
-                            listView.setAdapter(adapter);
-                            Toast.makeText(getActivity(), "You modified the category!", Toast.LENGTH_SHORT).show();
+                            try {
+                                MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                                String query = "ALTER TABLE " + itemname.get(actualPosition) + " RENAME TO " + String.valueOf(input.getText());
+                                MainActivity.myDB.execSQL(query);
+
+                                Toast.makeText(getActivity(), "TableExists  " + isTableExists(MainActivity.myDB, categoryText), Toast.LENGTH_SHORT).show();
+                            } catch (Exception e) {
+                                Log.e("Error", "Error with creating database", e);
+                            } finally {
+                                if (MainActivity.myDB != null)
+                                    MainActivity.myDB.close();
+                            }
+
+                            boolean check = false;
+                            for (int i = 0; i < itemname.size(); ++i) {
+                                if (itemname.get(i).equals(String.valueOf(input.getText()))) {
+                                    check = true;
+                                    break;
+                                }
+                            }
+
+                            if (check) {
+                                Toast.makeText(getActivity(), "Category named: " + String.valueOf(input.getText()) + " exists!", Toast.LENGTH_SHORT).show();
+                            } else {
+                                createTable(String.valueOf(input.getText()));
+                                itemname.set(actualPosition, String.valueOf(input.getText()));
+                                ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, itemname);
+                                listView.setAdapter(adapter);
+                                Toast.makeText(getActivity(), "You modified the category!", Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                         dialog.cancel();
