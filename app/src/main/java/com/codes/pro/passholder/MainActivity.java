@@ -25,9 +25,9 @@ import java.nio.charset.Charset;
 
 public class MainActivity extends ActionBarActivity {
 
-    public static final String DATABASE_NAME = "PASSWORDS_DB";
+    public static final String DATABASE_NAME = "PASSWORDS_DB.db";
     public static final String ENCRYPTED_DATABASE = "ENCRYPTED_PASSWORDS_DB";
-    public static android.database.sqlite.SQLiteDatabase myDB;
+    public static SQLiteDatabase myDB;
 
     private EditText pass;
     private Button login;
@@ -45,6 +45,17 @@ public class MainActivity extends ActionBarActivity {
         pass = (EditText) findViewById(R.id.editText);
         login = (Button) findViewById(R.id.loginButt);
 
+
+    }
+
+    private void InitializeSQLCipher() {
+        SQLiteDatabase.loadLibs(this);
+        File databaseFile = getDatabasePath(DATABASE_NAME);
+
+        databaseFile.mkdirs();
+        databaseFile.delete();
+        myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
+        myDB.close();
     }
 
 
@@ -62,7 +73,10 @@ public class MainActivity extends ActionBarActivity {
             if(userEmail.equals(""))
                 Toast.makeText(MainActivity.this, "Email empty  ", Toast.LENGTH_SHORT).show();
 
+            InitializeSQLCipher();
+
             // record the fact that the app has been started at least once
+
             settings.edit().putBoolean("firstRun", false).commit();
         }
 
@@ -106,11 +120,11 @@ public class MainActivity extends ActionBarActivity {
         if(getIntent().getBooleanExtra("closeApp", false))
         {
             Toast.makeText(MainActivity.this, "Encrypting", Toast.LENGTH_SHORT).show();
-            try {
+            /*try {
                 encryptDatabase(this.getApplicationContext(), "test123");
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            }*/
             android.os.Process.killProcess(android.os.Process.myPid());
 
             finish();
@@ -128,7 +142,7 @@ public class MainActivity extends ActionBarActivity {
             File newFile=
                     File.createTempFile("sqlcipherutils", "tmp",
                             ctxt.getCacheDir());
-            String path = originalFile.getAbsolutePath();
+            String path = newFile.getAbsolutePath();
             SQLiteDatabase db=SQLiteDatabase.openDatabase(path,"", null,SQLiteDatabase.OPEN_READWRITE);
 
             db.rawExecSQL(String.format("ATTACH DATABASE '%s' AS encrypted KEY '%s';",
@@ -196,16 +210,30 @@ public class MainActivity extends ActionBarActivity {
         startActivity(howTo);
     }
 
+    public static Context getContext() {
+        try {
+            return (Context) Class.forName("android.app.ActivityThread")
+                    .getMethod("currentApplication").invoke(null, (Object[]) null);
+        } catch (final Exception e1) {
+            try {
+                return (Context) Class.forName("android.app.AppGlobals")
+                        .getMethod("getInitialApplication").invoke(null, (Object[]) null);
+            } catch (final Exception e2) {
+                throw new RuntimeException("Failed to get application instance");
+            }
+        }
+    }
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             Toast.makeText(MainActivity.this, "Hope you'll back here! Sayonara", Toast.LENGTH_SHORT).show();
             Toast.makeText(MainActivity.this, "Encrypting", Toast.LENGTH_SHORT).show();
-            try {
+            /*try {
                 encryptDatabase(this.getApplicationContext(), "test123");
             } catch (IOException e) {
                 e.printStackTrace();
-            }
+            }*/
             finish();
         }
         return super.onKeyDown(keyCode, event);
