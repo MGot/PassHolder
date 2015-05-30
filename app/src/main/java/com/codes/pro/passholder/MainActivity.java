@@ -1,9 +1,8 @@
 package com.codes.pro.passholder;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.KeyEvent;
@@ -17,6 +16,9 @@ import android.widget.Toast;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 
+import net.sqlcipher.database.SQLiteDatabase;
+
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -25,7 +27,7 @@ public class MainActivity extends ActionBarActivity {
 
     public static final String DATABASE_NAME = "PASSWORDS_DB";
     public static final String ENCRYPTED_DATABASE = "ENCRYPTED_PASSWORDS_DB";
-    public static SQLiteDatabase myDB;
+    public static android.database.sqlite.SQLiteDatabase myDB;
 
     private EditText pass;
     private Button login;
@@ -103,9 +105,9 @@ public class MainActivity extends ActionBarActivity {
 
         if(getIntent().getBooleanExtra("closeApp", false))
         {
-            Toast.makeText(MainActivity.this, "Exit1", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Encrypting", Toast.LENGTH_SHORT).show();
             try {
-                encryptDatabase();
+                encryptDatabase(this.getApplicationContext(), "test123");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -115,26 +117,36 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void encryptDatabase()  throws IOException {
+    public static void encryptDatabase(Context ctxt,
+                               String passphrase) throws IOException {
 
+        File originalFile=ctxt.getDatabasePath(DATABASE_NAME);
 
+        if (originalFile.exists()) {
+            File newFile=
+                    File.createTempFile("sqlcipherutils", "tmp",
+                            ctxt.getCacheDir());
+            String path = originalFile.getAbsolutePath();
+            SQLiteDatabase db=SQLiteDatabase.openDatabase(path,"test", null,SQLiteDatabase.OPEN_READWRITE);
 
-        try {
-            MainActivity.myDB = openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
-            String query = "ATTACH DATABASE 'encrypted.db' AS encrypted KEY 'secret';";
-            myDB.execSQL(query);
-            query = "CREATE TABLE encrypted.t1(a,b);";
-            myDB.execSQL(query);
-            query = "INSERT INTO encrypted.t1 SELECT * FROM t1;";
-            myDB.execSQL(query);
-            query = "DETACH DATABASE encrypted;";
+            db.rawExecSQL(String.format("ATTACH DATABASE '%s' AS encrypted KEY '%s';",
+                    newFile.getAbsolutePath(), passphrase));
+            db.rawExecSQL("SELECT sqlcipher_export('encrypted')");
+            db.rawExecSQL("DETACH DATABASE encrypted;");
 
-            myDB.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (myDB.isOpen())
-                myDB.close();
+            int version=db.getVersion();
+
+            db.close();
+
+            db=
+                    SQLiteDatabase.openDatabase(newFile.getAbsolutePath(),
+                            passphrase, null,
+                            SQLiteDatabase.OPEN_READWRITE);
+            db.setVersion(version);
+            db.close();
+
+            originalFile.delete();
+            newFile.renameTo(originalFile);
         }
     }
 
@@ -143,7 +155,7 @@ public class MainActivity extends ActionBarActivity {
      *
      * @return true if it exists, false if it doesn't
      */
-    private boolean checkDataBase() {
+    /*private boolean checkDataBase() {
         SQLiteDatabase checkDB = null;
         try {
             checkDB = SQLiteDatabase.openDatabase(myDB.getPath(), null,
@@ -153,7 +165,7 @@ public class MainActivity extends ActionBarActivity {
             // database doesn't exist yet.
         }
         return checkDB != null;
-    }
+    }*/
 
 
     /**
@@ -169,7 +181,7 @@ public class MainActivity extends ActionBarActivity {
             startActivity(manList);
         }
         else{
-            Toast.makeText(getApplicationContext(), "Wrong password!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Wrong password! Try again", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -186,8 +198,9 @@ public class MainActivity extends ActionBarActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             Toast.makeText(MainActivity.this, "Hope you'll back here! Sayonara", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, "Encrypting", Toast.LENGTH_SHORT).show();
             try {
-                encryptDatabase();
+                encryptDatabase(this.getApplicationContext(), "test123");
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -199,11 +212,13 @@ public class MainActivity extends ActionBarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 1) {
-            if (resultCode == RESULT_OK || resultCode == RESULT_CANCELED) {
-                if (getIntent().getBooleanExtra("closeApp", false)) {
+            if(resultCode == RESULT_OK || resultCode == RESULT_CANCELED){
+                if(getIntent().getBooleanExtra("closeApp", false))
+                {
                     finish();
                 }
             }
         }
-    }
+    }//onActivityResult
+
 }
