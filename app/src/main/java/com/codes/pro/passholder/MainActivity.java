@@ -117,17 +117,19 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    public static void encryptDatabase(Context ctxt,
+    public void encryptDatabase(Context ctxt,
                                String passphrase) throws IOException {
 
+        SQLiteDatabase.loadLibs(ctxt);
         File originalFile=ctxt.getDatabasePath(DATABASE_NAME);
+        Toast.makeText(MainActivity.this, "File " + originalFile, Toast.LENGTH_SHORT).show();
 
         if (originalFile.exists()) {
             File newFile=
                     File.createTempFile("sqlcipherutils", "tmp",
                             ctxt.getCacheDir());
             String path = originalFile.getAbsolutePath();
-            SQLiteDatabase db=SQLiteDatabase.openDatabase(path,"test", null,SQLiteDatabase.OPEN_READWRITE);
+            SQLiteDatabase db=SQLiteDatabase.openDatabase(path,"", null,SQLiteDatabase.OPEN_READWRITE);
 
             db.rawExecSQL(String.format("ATTACH DATABASE '%s' AS encrypted KEY '%s';",
                     newFile.getAbsolutePath(), passphrase));
