@@ -5,7 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -18,6 +18,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import net.sqlcipher.database.SQLiteDatabase;
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +63,10 @@ public class PasswordActivity extends ActionBarActivity {
         };
 
         try {
-            MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+            SQLiteDatabase.loadLibs(this.getApplicationContext());
+            File databaseFile = getApplicationContext().getDatabasePath(MainActivity.DATABASE_NAME);
+            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
+            //MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
             ArrayList<String> values = getPasswordsFromDatabase(MainActivity.myDB, categoryText);
             for(int i = 0; i < values.size(); i++)
             {
@@ -148,7 +154,10 @@ public class PasswordActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(), "Password: " + pass + " exists!", Toast.LENGTH_SHORT).show();
         } else {
             try {
-                MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                SQLiteDatabase.loadLibs(this.getApplicationContext());
+                File databaseFile = getApplicationContext().getDatabasePath(MainActivity.DATABASE_NAME);
+                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
+                //MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
 
                 ContentValues values = new ContentValues();
                 values.put("password", pass);
@@ -222,7 +231,10 @@ public class PasswordActivity extends ActionBarActivity {
             Toast.makeText(getApplicationContext(), "Password: " + newPass + " exists!", Toast.LENGTH_SHORT).show();
         } else {
             try {
-                MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                SQLiteDatabase.loadLibs(this.getApplicationContext());
+                File databaseFile = getApplicationContext().getDatabasePath(MainActivity.DATABASE_NAME);
+                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
+                //MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
                 String updateQuery = "UPDATE " + categoryText + " SET password='" + newPass + "' WHERE password='" + oldPass + "'";
                 MainActivity.myDB.execSQL(updateQuery);
 
@@ -282,7 +294,10 @@ public class PasswordActivity extends ActionBarActivity {
 
             Toast.makeText(PasswordActivity.this, "Password to remove  " + pass, Toast.LENGTH_SHORT).show();
             try {
-                MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                SQLiteDatabase.loadLibs(this.getApplicationContext());
+                File databaseFile = getApplicationContext().getDatabasePath(MainActivity.DATABASE_NAME);
+                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
+                //MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
                 String deleteQuery = "DELETE FROM " +  categoryText + " Where password='"+ pass +"'";
 
                 MainActivity.myDB.execSQL(deleteQuery);

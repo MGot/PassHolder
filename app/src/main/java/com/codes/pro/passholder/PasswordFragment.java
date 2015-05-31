@@ -5,24 +5,20 @@ import android.app.ListFragment;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import net.sqlcipher.database.SQLiteDatabase;
 
-import static android.content.Context.MODE_PRIVATE;
+import java.io.File;
+import java.util.ArrayList;
 
 
 public class PasswordFragment extends ListFragment {
@@ -53,17 +49,11 @@ public class PasswordFragment extends ListFragment {
         super.onActivityCreated(savedInstanceState);
         View detailsFrame = getActivity().findViewById(R.id.passwordFrag);
         //Toast.makeText(getActivity(), name,Toast.LENGTH_LONG).show();
-        /*
 
-
-            POBIERZ KATEGORIE Z BAZY
-
-
-
-
-         */
         try {
-            MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+            SQLiteDatabase.loadLibs(getActivity());
+            File databaseFile = getActivity().getDatabasePath(MainActivity.DATABASE_NAME);
+            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
             ArrayList<String> values = getPasswordsFromDatabase(MainActivity.myDB, name);
             for(int i = 0; i < values.size(); i++) {
                 password.add(values.get(i));
@@ -154,7 +144,10 @@ public class PasswordFragment extends ListFragment {
                             Toast.makeText(getActivity(), "Password: " + String.valueOf(input.getText()) + " exists!", Toast.LENGTH_SHORT).show();
                         } else {
                             try {
-                                MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                                SQLiteDatabase.loadLibs(getActivity());
+                                File databaseFile = getActivity().getDatabasePath(MainActivity.DATABASE_NAME);
+                                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
+                                //MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
 
                                 ContentValues values = new ContentValues();
                                 values.put("password", String.valueOf(input.getText()));
@@ -246,7 +239,10 @@ public class PasswordFragment extends ListFragment {
                     public void onClick(DialogInterface dialog, int id) {
                         Toast.makeText(getActivity(), "Password to remove " + pass, Toast.LENGTH_SHORT).show();
                         try {
-                            MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                            SQLiteDatabase.loadLibs(getActivity());
+                            File databaseFile = getActivity().getDatabasePath(MainActivity.DATABASE_NAME);
+                            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
+                            //MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
                             String deleteQuery = "DELETE FROM " +  name + " Where password='"+ pass +"'";
 
                             MainActivity.myDB.execSQL(deleteQuery);
