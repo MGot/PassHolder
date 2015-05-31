@@ -43,4 +43,13 @@
         android:layout_weight="0.04"
         android:onClick="howTo"/>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Forget password"
+        android:id="@+id/forgetPassword"
+        android:layout_gravity="center_horizontal"
+        android:onClick="forgetPassword"
+        android:layout_weight="0.04" />
+
 </LinearLayout>

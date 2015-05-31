@@ -138,6 +138,16 @@ public class MainActivity extends ActionBarActivity {
     }
 
     /**
+     * method opening ForgetPasswordActivity
+     * @param view
+     */
+    public void forgetPassword(View view)
+    {
+        Intent forgetPassword = new Intent(getApplicationContext(), ForgetPasswordActivity.class);
+        startActivity(forgetPassword);
+    }
+
+    /**
      * method to inform user how to use PassHolder
      * @param v
      */

@@ -33,6 +33,10 @@
             android:name=".PasswordActivity"
             android:label="@string/title_activity_password" >
         </activity>
+        <activity
+            android:name=".ForgetPasswordActivity"
+            android:label="ForgetPasswordActivity">
+        </activity>
     </application>
 
 </manifest>

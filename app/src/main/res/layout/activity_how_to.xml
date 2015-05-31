@@ -9,10 +9,28 @@
 
 
     <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:text="HOW TO USE OUT APP"
-        android:id="@+id/howToField"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentTop="true" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="32dp"
+        android:text="PassHolder"
+        android:id="@+id/textView"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Application to keep passwords.
+        \nPasswords are stored in encrypted database which make them completely safe.
+        \nIn our application you can add unlimited number of categories like banks, forums etc. and also unlimited number of passwords for each category.
+        \nIf you forget password, we will send it to your email.
+        \nHope You like it!
+        \n\nAuthors: \nMarcin Gotszling \nMichał Walkowiak"
+        android:id="@+id/textView5"
+        android:layout_below="@+id/textView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="58dp"
+        android:layout_alignRight="@+id/textView"
+        android:layout_alignEnd="@+id/textView" />
 </RelativeLayout>
