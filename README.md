@@ -1,9 +1,10 @@
 # PassHolder
 
-Użyte wiadomości z wykładów: \n
-\nWykład 2 - Activity, Intent, Manifest, Button etc. 
-\nWykład 3 - onResume, startActivityOnResult
-\nWykład 4 - Listview, Fragmenty
-\nWykład 5 - SharedPreferences, onResume
-\n\n
+Użyte wiadomości z wykładów: 
+<br><br>
+Wykład 2 - Activity, Intent, Manifest, Button etc. 
+Wykład 3 - onResume, startActivityOnResult
+Wykład 4 - Listview, Fragmenty
+Wykład 5 - SharedPreferences, onResume
+
 W aplikacji została użyta zewnętrzna biblioteka SQLcipher
