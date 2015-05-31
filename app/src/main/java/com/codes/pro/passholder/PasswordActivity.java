@@ -65,8 +65,7 @@ public class PasswordActivity extends ActionBarActivity {
         try {
             SQLiteDatabase.loadLibs(this.getApplicationContext());
             File databaseFile = getApplicationContext().getDatabasePath(MainActivity.DATABASE_NAME);
-            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
-            //MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, MainActivity.userPassString, null);
             ArrayList<String> values = getPasswordsFromDatabase(MainActivity.myDB, categoryText);
             for(int i = 0; i < values.size(); i++)
             {
@@ -75,7 +74,6 @@ public class PasswordActivity extends ActionBarActivity {
                 //listView.setAdapter(adapter);
             }
 
-            //displayDatabase(MainActivity.myDB, categoryText);
         } catch(Exception e) {
             Log.e("Error", "Error with creating database", e);
         } finally {
@@ -156,14 +154,13 @@ public class PasswordActivity extends ActionBarActivity {
             try {
                 SQLiteDatabase.loadLibs(this.getApplicationContext());
                 File databaseFile = getApplicationContext().getDatabasePath(MainActivity.DATABASE_NAME);
-                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
-                //MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, MainActivity.userPassString, null);
 
                 ContentValues values = new ContentValues();
                 values.put("password", pass);
                 MainActivity.myDB.insert(categoryText, null, values);
 
-                displayDatabase(MainActivity.myDB, categoryText);
+                //displayDatabase(MainActivity.myDB, categoryText);
             }catch(Exception e) {
                 Toast.makeText(getApplicationContext(), "ERROR with adding to databse", Toast.LENGTH_SHORT).show();
                 Log.e("Error", "Error with creating database", e);
@@ -233,8 +230,7 @@ public class PasswordActivity extends ActionBarActivity {
             try {
                 SQLiteDatabase.loadLibs(this.getApplicationContext());
                 File databaseFile = getApplicationContext().getDatabasePath(MainActivity.DATABASE_NAME);
-                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
-                //MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, MainActivity.userPassString, null);
                 String updateQuery = "UPDATE " + categoryText + " SET password='" + newPass + "' WHERE password='" + oldPass + "'";
                 MainActivity.myDB.execSQL(updateQuery);
 
@@ -296,8 +292,7 @@ public class PasswordActivity extends ActionBarActivity {
             try {
                 SQLiteDatabase.loadLibs(this.getApplicationContext());
                 File databaseFile = getApplicationContext().getDatabasePath(MainActivity.DATABASE_NAME);
-                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
-                //MainActivity.myDB = this.openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, MainActivity.userPassString, null);
                 String deleteQuery = "DELETE FROM " +  categoryText + " Where password='"+ pass +"'";
 
                 MainActivity.myDB.execSQL(deleteQuery);

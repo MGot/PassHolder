@@ -19,14 +19,12 @@ import com.google.common.hash.Hashing;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.charset.Charset;
 
 
 public class MainActivity extends ActionBarActivity {
 
     public static final String DATABASE_NAME = "PASSWORDS_DB.db";
-    public static final String ENCRYPTED_DATABASE = "ENCRYPTED_PASSWORDS_DB";
     public static SQLiteDatabase myDB;
 
     private EditText pass;
@@ -48,20 +46,21 @@ public class MainActivity extends ActionBarActivity {
 
     }
 
+    /**
+     * method to initialize encrypted database
+     */
     private void InitializeSQLCipher() {
         SQLiteDatabase.loadLibs(this);
         File databaseFile = getDatabasePath(DATABASE_NAME);
 
         databaseFile.mkdirs();
         databaseFile.delete();
-        myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
-        myDB.close();
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu; this adds items to the action bar if it is present.app
 
         SharedPreferences settings = getSharedPreferences("MyPrefsFile", 0);
         SharedPreferences infos = getSharedPreferences("userInfos", 0);
@@ -75,13 +74,8 @@ public class MainActivity extends ActionBarActivity {
 
             InitializeSQLCipher();
 
-            // record the fact that the app has been started at least once
-
             settings.edit().putBoolean("firstRun", false).commit();
         }
-
-        //Toast.makeText(MainActivity.this, "Asynchr?", Toast.LENGTH_SHORT).show();
-
 
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
@@ -120,69 +114,11 @@ public class MainActivity extends ActionBarActivity {
         if(getIntent().getBooleanExtra("closeApp", false))
         {
             Toast.makeText(MainActivity.this, "Encrypting", Toast.LENGTH_SHORT).show();
-            /*try {
-                encryptDatabase(this.getApplicationContext(), "test123");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
             android.os.Process.killProcess(android.os.Process.myPid());
 
             finish();
         }
     }
-
-    public void encryptDatabase(Context ctxt,
-                               String passphrase) throws IOException {
-
-        SQLiteDatabase.loadLibs(ctxt);
-        File originalFile=ctxt.getDatabasePath(DATABASE_NAME);
-        Toast.makeText(MainActivity.this, "File " + originalFile, Toast.LENGTH_SHORT).show();
-
-        if (originalFile.exists()) {
-            File newFile=
-                    File.createTempFile("sqlcipherutils", "tmp",
-                            ctxt.getCacheDir());
-            String path = newFile.getAbsolutePath();
-            SQLiteDatabase db=SQLiteDatabase.openDatabase(path,"", null,SQLiteDatabase.OPEN_READWRITE);
-
-            db.rawExecSQL(String.format("ATTACH DATABASE '%s' AS encrypted KEY '%s';",
-                    newFile.getAbsolutePath(), passphrase));
-            db.rawExecSQL("SELECT sqlcipher_export('encrypted')");
-            db.rawExecSQL("DETACH DATABASE encrypted;");
-
-            int version=db.getVersion();
-
-            db.close();
-
-            db=
-                    SQLiteDatabase.openDatabase(newFile.getAbsolutePath(),
-                            passphrase, null,
-                            SQLiteDatabase.OPEN_READWRITE);
-            db.setVersion(version);
-            db.close();
-
-            originalFile.delete();
-            newFile.renameTo(originalFile);
-        }
-    }
-
-    /**
-     * Check if the database exist
-     *
-     * @return true if it exists, false if it doesn't
-     */
-    /*private boolean checkDataBase() {
-        SQLiteDatabase checkDB = null;
-        try {
-            checkDB = SQLiteDatabase.openDatabase(myDB.getPath(), null,
-                    SQLiteDatabase.OPEN_READONLY);
-            checkDB.close();
-        } catch (SQLiteException e) {
-            // database doesn't exist yet.
-        }
-        return checkDB != null;
-    }*/
-
 
     /**
      * method called after clicked on log in button, generally it checks if pass match
@@ -229,16 +165,17 @@ public class MainActivity extends ActionBarActivity {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
             Toast.makeText(MainActivity.this, "Hope you'll back here! Sayonara", Toast.LENGTH_SHORT).show();
             Toast.makeText(MainActivity.this, "Encrypting", Toast.LENGTH_SHORT).show();
-            /*try {
-                encryptDatabase(this.getApplicationContext(), "test123");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
             finish();
         }
         return super.onKeyDown(keyCode, event);
     }
 
+    /**
+     * method to get result from FirstRunActivity
+     * @param requestCode
+     * @param resultCode
+     * @param data
+     */
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 1) {
@@ -249,6 +186,6 @@ public class MainActivity extends ActionBarActivity {
                 }
             }
         }
-    }//onActivityResult
+    }
 
 }

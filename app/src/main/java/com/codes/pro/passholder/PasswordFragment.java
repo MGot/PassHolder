@@ -48,16 +48,14 @@ public class PasswordFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         View detailsFrame = getActivity().findViewById(R.id.passwordFrag);
-        //Toast.makeText(getActivity(), name,Toast.LENGTH_LONG).show();
 
         try {
             SQLiteDatabase.loadLibs(getActivity());
             File databaseFile = getActivity().getDatabasePath(MainActivity.DATABASE_NAME);
-            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
+            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, MainActivity.userPassString, null);
             ArrayList<String> values = getPasswordsFromDatabase(MainActivity.myDB, name);
             for(int i = 0; i < values.size(); i++) {
                 password.add(values.get(i));
-                //Toast.makeText(getActivity(), "CHUJ CHUJ CHUJ", Toast.LENGTH_SHORT).show();
             }
 
             displayDatabase(MainActivity.myDB, name);
@@ -146,8 +144,7 @@ public class PasswordFragment extends ListFragment {
                             try {
                                 SQLiteDatabase.loadLibs(getActivity());
                                 File databaseFile = getActivity().getDatabasePath(MainActivity.DATABASE_NAME);
-                                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
-                                //MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, MainActivity.userPassString, null);
 
                                 ContentValues values = new ContentValues();
                                 values.put("password", String.valueOf(input.getText()));
@@ -191,13 +188,7 @@ public class PasswordFragment extends ListFragment {
                 })
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        /*
 
-
-                            EDYCJA HASŁA W BAZIE
-
-
-                         */
                         boolean check = false;
                         for (int i = 0; i < password.size(); ++i) {
                             if(password.get(i).equals(String.valueOf(input.getText()))) {
@@ -241,8 +232,7 @@ public class PasswordFragment extends ListFragment {
                         try {
                             SQLiteDatabase.loadLibs(getActivity());
                             File databaseFile = getActivity().getDatabasePath(MainActivity.DATABASE_NAME);
-                            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
-                            //MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, MainActivity.userPassString, null);
                             String deleteQuery = "DELETE FROM " +  name + " Where password='"+ pass +"'";
 
                             MainActivity.myDB.execSQL(deleteQuery);
@@ -289,6 +279,11 @@ public class PasswordFragment extends ListFragment {
         return values;
     }
 
+    /**
+     * method to display database
+     * @param db
+     * @param tableName
+     */
     private void displayDatabase(SQLiteDatabase db, String tableName)
     {
         ArrayList<String> values = new ArrayList<String>();

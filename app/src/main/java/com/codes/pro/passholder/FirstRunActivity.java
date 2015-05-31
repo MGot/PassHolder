@@ -144,17 +144,4 @@ public class FirstRunActivity extends ActionBarActivity {
         infos.edit().putString("userPass", password.toString()).commit();
     }
 
-    /*@Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            Toast.makeText(FirstRunActivity.this, "Hope you'll back here! Sayonara", Toast.LENGTH_SHORT).show();
-            finish();
-        }
-        return super.onKeyDown(keyCode, event);
-    }*/
-
-    @Override
-    public void onBackPressed() {
-
-    }
 }

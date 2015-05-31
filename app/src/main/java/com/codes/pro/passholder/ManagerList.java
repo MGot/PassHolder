@@ -52,8 +52,7 @@ public class ManagerList extends ListFragment {
             try {
                 SQLiteDatabase.loadLibs(getActivity().getApplicationContext());
                 File databaseFile = getActivity().getApplicationContext().getDatabasePath(MainActivity.DATABASE_NAME);
-                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
-                //MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, MainActivity.userPassString, null);
                 Cursor c = MainActivity.myDB.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name !='android_metadata' AND name != 'sqlite_sequence'", null);
 
                 if (c.moveToFirst()) {
@@ -94,8 +93,6 @@ public class ManagerList extends ListFragment {
 
         mDualPane = detailsFrame != null
                 && detailsFrame.getVisibility() == View.VISIBLE;
-
-        //Toast.makeText(getActivity(), "mDualPane " + mDualPane,Toast.LENGTH_LONG).show();
 
         if (savedInstanceState != null) {
             mCurCheckPosition = savedInstanceState.getInt("curChoice", 0);
@@ -258,8 +255,7 @@ public class ManagerList extends ListFragment {
                             try {
                                 SQLiteDatabase.loadLibs(getActivity());
                                 File databaseFile = getActivity().getDatabasePath(MainActivity.DATABASE_NAME);
-                                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
-                                //MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                                MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, MainActivity.userPassString, null);
                                 String query = "ALTER TABLE " + itemname.get(actualPosition) + " RENAME TO " + String.valueOf(input.getText());
                                 MainActivity.myDB.execSQL(query);
 
@@ -315,8 +311,7 @@ public class ManagerList extends ListFragment {
                         try {
                             SQLiteDatabase.loadLibs(getActivity());
                             File databaseFile = getActivity().getDatabasePath(MainActivity.DATABASE_NAME);
-                            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, "test123", null);
-                            //MainActivity.myDB = getActivity().openOrCreateDatabase(MainActivity.DATABASE_NAME, MODE_PRIVATE, null);
+                            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(databaseFile, MainActivity.userPassString, null);
                             MainActivity.myDB.execSQL("DROP TABLE IF EXISTS " + itemname.get(actualPosition) + ";");
 
                             Toast.makeText(getActivity(), "TableExists  "+ isTableExists(MainActivity.myDB,itemname.get(actualPosition) ), Toast.LENGTH_SHORT).show();
@@ -372,7 +367,7 @@ public class ManagerList extends ListFragment {
                 Toast.makeText(getActivity(), "NIE MA!!!  ", Toast.LENGTH_SHORT).show();
 
 
-            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(database, "test123", null);
+            MainActivity.myDB = SQLiteDatabase.openOrCreateDatabase(database, MainActivity.userPassString, null);
 
             MainActivity.myDB.execSQL("CREATE TABLE IF NOT EXISTS "
                     + categoryText
